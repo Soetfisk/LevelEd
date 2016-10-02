@@ -6,58 +6,62 @@
 using namespace gameplay;
 
 /**
- * Main game class.
- */
-class LevelEditor: public Game
+* Main game class.
+*/
+class LevelEditor : public Game
 {
 public:
 
-    /**
-     * Constructor.
-     */
-    LevelEditor();
+	/**
+	* Constructor.
+	*/
+	LevelEditor();
 
-    /**
-     * @see Game::keyEvent
-     */
+	/**
+	* @see Game::keyEvent
+	*/
 	void keyEvent(Keyboard::KeyEvent evt, int key);
-	
-    /**
-     * @see Game::touchEvent
-     */
-    void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
+
+	/**
+	* @see Game::touchEvent
+	*/
+	void touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex);
 
 protected:
 
-    /**
-     * @see Game::initialize
-     */
-    void initialize();
+	Mesh * createMesh(const void* vertexData, unsigned int vertexCount);
 
-    /**
-     * @see Game::finalize
-     */
-    void finalize();
+	/**
+	* @see Game::initialize
+	*/
+	void initialize();
 
-    /**
-     * @see Game::update
-     */
-    void update(float elapsedTime);
+	/**
+	* @see Game::finalize
+	*/
+	void finalize();
 
-    /**
-     * @see Game::render
-     */
-    void render(float elapsedTime);
+	/**
+	* @see Game::update
+	*/
+	void update(float elapsedTime);
+
+	/**
+	* @see Game::render
+	*/
+	void render(float elapsedTime);
 
 private:
 
-    /**
-     * Draws the scene each frame.
-     */
-    bool drawScene(Node* node);
 
-    Scene* _scene;
-    bool _wireframe;
+
+	/**
+	* Draws the scene each frame.
+	*/
+	bool drawScene(Node* node);
+
+	Scene* _scene;
+	bool _wireframe;
 };
 
 #endif

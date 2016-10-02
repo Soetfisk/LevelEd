@@ -8,6 +8,12 @@
     <Filter Include="res\shaders">
       <UniqueIdentifier>{f54d3628-f193-4138-97ca-0ca3b34480d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\cpp">
+      <UniqueIdentifier>{70539aab-35df-44b8-910c-ccbe6210d916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\headers">
+      <UniqueIdentifier>{c0ce8b75-2f4d-4ba1-8449-c340d222e650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="game.config" />
@@ -75,13 +81,19 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LevelEditor.h">
-      <Filter>src</Filter>
-    </ClInclude>
+    <ClCompile Include="src\LevelEditor.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="MayaReader.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\LevelEditor.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
+    <ClInclude Include="src\LevelEditor.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MayaReader.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
