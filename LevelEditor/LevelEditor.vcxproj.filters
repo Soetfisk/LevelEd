@@ -84,7 +84,7 @@
     <ClCompile Include="src\LevelEditor.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="MayaReader.cpp">
+    <ClCompile Include="src\MayaReader.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,7 +92,10 @@
     <ClInclude Include="src\LevelEditor.h">
       <Filter>src\headers</Filter>
     </ClInclude>
-    <ClInclude Include="MayaReader.h">
+    <ClInclude Include="src\MayaReader.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataTypes.h">
       <Filter>src\headers</Filter>
     </ClInclude>
   </ItemGroup>

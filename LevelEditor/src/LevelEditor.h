@@ -1,7 +1,9 @@
 #ifndef LevelEditor_H_
 #define LevelEditor_H_
 
+#include "MayaReader.h"
 #include "gameplay.h"
+#include "DataTypes.h"
 
 using namespace gameplay;
 
@@ -18,6 +20,11 @@ public:
 	LevelEditor();
 
 	/**
+	* Destructor.
+	*/
+	~LevelEditor();
+
+	/**
 	* @see Game::keyEvent
 	*/
 	void keyEvent(Keyboard::KeyEvent evt, int key);
@@ -29,7 +36,10 @@ public:
 
 protected:
 
-	Mesh * createMesh(const void* vertexData, unsigned int vertexCount);
+
+	void createMesh(const void* vertexData);
+
+	void createTestMesh();
 
 	/**
 	* @see Game::initialize
@@ -53,7 +63,7 @@ protected:
 
 private:
 
-
+	MayaReader * mayaReader;
 
 	/**
 	* Draws the scene each frame.

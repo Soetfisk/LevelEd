@@ -185,12 +185,13 @@ xcopy ..\..\LevelEd\gameplay\res\ui res\ui\* /s /y /d</Command>
     <None Include="res\shaders\textured.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MayaReader.cpp" />
     <ClCompile Include="src\LevelEditor.cpp" />
+    <ClCompile Include="src\MayaReader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MayaReader.h" />
+    <ClInclude Include="src\DataTypes.h" />
     <ClInclude Include="src\LevelEditor.h" />
+    <ClInclude Include="src\MayaReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
