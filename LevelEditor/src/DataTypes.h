@@ -12,8 +12,9 @@ struct Mesh
 
 struct Vertex
 {
-	float x, y, z;
+	float x, y, z; //pos
 	float r, g, b; //temp
+	float nx, ny, nz; //normal
 };
 
 struct Topology

@@ -1,8 +1,18 @@
 #include "LevelEditor.h"
-
+#include <stdio.h>
+#include "Windows.h"
+#include "Wincon.h"
 
 // Declare our game instance
 LevelEditor game;
+
+void InitDosConsole() {
+	AllocConsole();
+	freopen("CONIN$", "rb", stdin);
+	freopen("CONOUT$", "wb", stdout);
+	freopen("CONOUT$", "wb", stderr);
+}
+
 
 LevelEditor::LevelEditor()
 	: _scene(NULL), _wireframe(false)
@@ -16,41 +26,58 @@ LevelEditor::~LevelEditor()
 
 void LevelEditor::initialize()
 {
+
+	InitDosConsole();
+
 	mayaReader = new MayaReader();
 
 	_scene = Scene::create();
-	Node * lightNode = Node::create("pointLightShape1");
+
+	_scene->setAmbientColor(1.0, 1.0, 1.0);
+
+
+	Node * lightnode = Node::create("pointLightShape1");
 	Light * light = Light::createPoint(Vector3(0.5f, 0.5f, 0.5f), 25);
 
-	lightNode->setLight(light);
-	lightNode->translate(Vector3(1.f, 0.f, 0.f));
+	lightnode->setLight(light);
+	lightnode->translate(Vector3(1.f, 0.f, 0.f));
 
-	_scene->addNode(lightNode);
+	_scene->addNode(lightnode);
 
-	lightNode->release();
+	lightnode->release();
 	light->release();
 
 #pragma region TESTS
-	createTestMesh();
-
-
-	//float camMatrix[4][4];
-	Node * cameraNode = Node::create("kuk_camera");
-	_scene->addNode(cameraNode);
-	Camera* cam = cameraNode->getCamera();
-	cam = Camera::createPerspective(60, 1920/1080, 0, 1000);
-	cameraNode->setCamera(cam);
-
-
-	//cam->setProjectionMatrix(projectionMatrix);
-
-	_scene->setActiveCamera(cameraNode->getCamera());
-#pragma endregion
-
 	
 
-	//kiss->setVertexData(vertexData, vertexStart, vertexCount)
-	//kuken->draw();
+	Camera * camera = Camera::createPerspective(45.0,
+		getAspectRatio(), 1.0f, 100.0f);
+	Node * cameraNode = _scene->addNode("camera");
+	cameraNode->setCamera(camera);
+	_scene->setActiveCamera(camera);
+	
+	SAFE_RELEASE(camera);
+
+	cameraNode->translate(0, 1, 5);
+	cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
+
+	
+	// Create a white light.
+	//Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
+	//Node* lightNode = _scene->addNode("light");
+	//lightNode->setLight(light);
+	////cam->setProjectionMatrix(projectionMatrix);
+	//SAFE_RELEASE(light);
+	//printf("dir light: %f, %f, %f \n", lightNode->getForwardVectorView().x, lightNode->getForwardVectorView().y, lightNode->getForwardVectorView().z);
+
+	//lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
+
+	printf("camera translation: %f, %f, %f \n", cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
+
+	//printf("dir light: %f, %f, %f \n", lightNode->getForwardVectorView().x, lightNode->getForwardVectorView().y, lightNode->getForwardVectorView().z);
+
+	createTestMesh();
+#pragma endregion
 
 
 
@@ -67,8 +94,6 @@ void LevelEditor::update(float elapsedTime)
 {
 	void* Node = nullptr;
 	unsigned int Case;
-
-
 
 	Case = mayaReader->read(); //READ AND HANDLE FIRST HEADER
 	switch (Case)
@@ -121,7 +146,7 @@ void LevelEditor::update(float elapsedTime)
 void LevelEditor::render(float elapsedTime)
 {
 	// Clear the color and depth buffers
-	clear(CLEAR_COLOR_DEPTH, Vector4::zero(), 1.0f, 0);
+	clear(CLEAR_COLOR_DEPTH, Vector4(1.0, 1.0 ,1.0 ,1.0), 1.0f, 0);
 
 
 
@@ -232,8 +257,23 @@ void LevelEditor::createMesh(const void* meshData)
 void LevelEditor::createTestMesh()
 {
 	Node * node = _scene->findNode(mayaReader->testMesh->name);
-	Material * material = nullptr;
+	
+	//Material * material = Material::create("res/demo.material");
+	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
 
+	RenderState::StateBlock* block = RenderState::StateBlock::create();
+	block->setCullFace(true);
+	block->setDepthTest(true);
+	material->setStateBlock(block);
+	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
+	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
+	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+	Node* lightNode = _scene->findNode("pointLightShape1");
+	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
+	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
+	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+	
 
 	if (node)
 	{
@@ -248,10 +288,11 @@ void LevelEditor::createTestMesh()
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::COLOR, 3),
+		VertexFormat::Element(VertexFormat::NORMAL, 3)
 	};
 
-	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 2), mayaReader->testMesh->vertexCount, false);
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mayaReader->testMesh->vertexCount, true);
 
 	if (mesh == NULL)
 	{
@@ -280,10 +321,17 @@ void LevelEditor::createTestMesh()
 
 	Model * model = Model::create(mesh);
 
+
+
 	if (material)
 		model->setMaterial(material);
 
+	
+
 	node->setDrawable(model);
+	node->translateZ(3.0f);
+
+	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
 
 	_scene->addNode(node);
 }

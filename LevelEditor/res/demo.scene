@@ -9,8 +9,4 @@ scene
         material = res/demo.material#lambert2
     }
 
-    physics
-    {
-        gravity = 0.0, -9.8, 0.0
-    }
 }
