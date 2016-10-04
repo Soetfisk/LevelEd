@@ -104,15 +104,28 @@ void LevelEditor::update(float elapsedTime)
 		switch (Case) 
 		{
 		case MayaReader::NEW_MESH:
-			createMesh(Node);
+		{
+			printf("KUK\n");
+			mayaReader->cleanUp();
+			break;
+		}
+			//createMesh(Node);
 
 		case MayaReader::NEW_MATERIAL:
+		{
+			printf("BAJS\n");
+			break;
+		}
+
 		case MayaReader::TRANSFORM:
 		case MayaReader::CAMERA:
 		case MayaReader::TEXTURE:
 
+		case MayaReader::NUMBER_OF_SETTINGS:
+			break;
 
 		default:
+			mayaReader->cleanUp();
 			break;
 		}
 

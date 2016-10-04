@@ -4,7 +4,7 @@
 
 MayaReader::MayaReader() 
 {
-	circularBuffer = new CircularBuffer(L"poop3", 10, true, 256);
+	circularBuffer = new CircularBuffer(L"poop3", 10, false, 256);
 
 
 //#pragma region initTestCube
@@ -108,27 +108,44 @@ MayaReader::MayaReader()
 MayaReader::~MayaReader() 
 {
 	delete circularBuffer;
-
+	delete msg;
 }
 
 MayaReader::MsgContain MayaReader::handleData(void *& Node) //reference to pointer in order to change the adress
 {
+	msg += sizeof(headers::MainHeader);
+	printf("%d \n", ((headers::TypeHeader*)msg)->type);
+
+	msg += sizeof(headers::TypeHeader);
+
+	Node = msg;
+
+	return NEW_MESH; //temp
+}
+
+void MayaReader::cleanUp()
+{
 	
-	return NUMBER_OF_SETTINGS; //temp
 }
 
 MayaReader::MsgType MayaReader::read()
 {
+
+	//CIRCLE BUFFER CONFLICT WITH PHYSICSCONTROLLER.H/CPP
+	//I CHANGED ALL DEFINED "REGISTRED" VARIABLES, THEY'RE NOW CALLED "AIDS". 
+	//THIS "MIGHT" CAUSE PROBLEMS....
+
 	msg = new char[(10 * 1 << 10) / 4];
-	
+		
+
 	if (circularBuffer->pop(msg, length))
 	{
+		printf("%d \n", (MsgType)(*msg));
 
-		unsigned int test = ((MainHeader*)msg)->type;
+		
 
-		printf("%d", test);
-
-		delete msg;
+		unsigned int i = (MsgType)(*msg);
+		return (MsgType)(*msg);
 	}
 	else
 		return NUMBER_OF_TYPES; //temp
