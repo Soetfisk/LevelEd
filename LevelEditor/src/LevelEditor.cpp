@@ -76,7 +76,7 @@ void LevelEditor::initialize()
 
 	//printf("dir light: %f, %f, %f \n", lightNode->getForwardVectorView().x, lightNode->getForwardVectorView().y, lightNode->getForwardVectorView().z);
 
-	createTestMesh();
+	//createTestMesh();
 #pragma endregion
 
 

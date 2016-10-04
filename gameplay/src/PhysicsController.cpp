@@ -24,7 +24,7 @@ namespace gameplay
 
 const int PhysicsController::DIRTY         = 0x01;
 const int PhysicsController::COLLISION     = 0x02;
-const int PhysicsController::REGISTERED    = 0x04;
+const int PhysicsController::AIDS    = 0x04;
 const int PhysicsController::REMOVE        = 0x08;
 
 PhysicsController::PhysicsController()
@@ -579,7 +579,7 @@ void PhysicsController::update(float elapsedTime)
         // If this collision pair was one that was registered for listening, then perform the collision test.
         // (In the case where we register for all collisions with a rigid body, there will be a lot
         // of collision pairs in the status cache that we did not explicitly register for.)
-        if ((iter->second._status & REGISTERED) != 0 && (iter->second._status & REMOVE) == 0)
+        if ((iter->second._status & AIDS) != 0 && (iter->second._status & REMOVE) == 0)
         {
             if (iter->first.objectB)
                 _world->contactPairTest(iter->first.objectA->getCollisionObject(), iter->first.objectB->getCollisionObject(), *_collisionCallback);
@@ -621,7 +621,7 @@ void PhysicsController::addCollisionListener(PhysicsCollisionObject::CollisionLi
     // Add the listener and ensure the status includes that this collision pair is registered.
     CollisionInfo& info = _collisionStatus[pair];
     info._listeners.push_back(listener);
-    info._status |= PhysicsController::REGISTERED;
+    info._status |= PhysicsController::AIDS;
 }
 
 void PhysicsController::removeCollisionListener(PhysicsCollisionObject::CollisionListener* listener, PhysicsCollisionObject* objectA, PhysicsCollisionObject* objectB)

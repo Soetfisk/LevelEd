@@ -1,8 +1,14 @@
 #pragma once
 #ifndef MAYAREADER_H_
 #define MAYAREADER_H_
+#include <string>
+#include <stdio.h>
+#include <iostream>
+#include <Windows.h>
 
+#include "CircularBuffer.h"
 #include "DataTypes.h"
+#include "structs.h"
 
 class MayaReader
 {
@@ -41,7 +47,9 @@ public:
 	DataType::Vertex * testVertexData;
 
 private:
-
+	char * msg;
+	size_t length;
+	CircularBuffer * circularBuffer;
 
 	//float TESTCUBE[36 * 3 * 2] = {
 	//	-1.0f, -1.0f, -1.0f, // triangle 1 : begin

@@ -87,6 +87,9 @@
     <ClCompile Include="src\MayaReader.cpp">
       <Filter>src\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="src\CircularBuffer.cpp">
+      <Filter>src\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LevelEditor.h">
@@ -96,6 +99,12 @@
       <Filter>src\headers</Filter>
     </ClInclude>
     <ClInclude Include="src\DataTypes.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CircularBuffer.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\structs.h">
       <Filter>src\headers</Filter>
     </ClInclude>
   </ItemGroup>
