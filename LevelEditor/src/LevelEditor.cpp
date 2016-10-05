@@ -103,29 +103,27 @@ void LevelEditor::update(float elapsedTime)
 		Case = mayaReader->handleData(Node); //READ SECOND HEADER FOR SPECIFIC TYPES
 		switch (Case) 
 		{
-		case MayaReader::NEW_MESH:
+		case MayaReader::MESH_NEW:
 		{
 			printf("KUK\n");
-			mayaReader->cleanUp();
 			break;
 		}
 			//createMesh(Node);
 
-		case MayaReader::NEW_MATERIAL:
+		case MayaReader::MATERIAL_NEW:
 		{
 			printf("BAJS\n");
 			break;
 		}
 
-		case MayaReader::TRANSFORM:
-		case MayaReader::CAMERA:
-		case MayaReader::TEXTURE:
+		case MayaReader::TRANSFORM_NEW:
+		case MayaReader::CAMERA_NEW:
+		case MayaReader::TEXTURE_NEW:
 
 		case MayaReader::NUMBER_OF_SETTINGS:
 			break;
 
 		default:
-			mayaReader->cleanUp();
 			break;
 		}
 
@@ -144,6 +142,8 @@ void LevelEditor::update(float elapsedTime)
 			break;
 		}
 
+	case MayaReader::NUMBER_OF_TYPES:
+			break;
 	default:
 		break;
 	}

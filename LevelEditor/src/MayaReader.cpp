@@ -120,7 +120,7 @@ MayaReader::MsgContain MayaReader::handleData(void *& Node) //reference to point
 
 	Node = msg;
 
-	return NEW_MESH; //temp
+	return MESH_NEW; //temp
 }
 
 void MayaReader::cleanUp()
@@ -140,11 +140,7 @@ MayaReader::MsgType MayaReader::read()
 
 	if (circularBuffer->pop(msg, length))
 	{
-		printf("%d \n", (MsgType)(*msg));
-
-		
-
-		unsigned int i = (MsgType)(*msg);
+		//printf("%d \n", (MsgType)(*msg));
 		return (MsgType)(*msg);
 	}
 	else
