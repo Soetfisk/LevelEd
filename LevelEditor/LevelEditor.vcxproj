@@ -195,6 +195,7 @@ xcopy ..\..\LevelEd\gameplay\res\ui res\ui\* /s /y /d</Command>
     <ClInclude Include="src\LevelEditor.h" />
     <ClInclude Include="src\MayaReader.h" />
     <ClInclude Include="src\structs.h" />
+    <ClInclude Include="VertexData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

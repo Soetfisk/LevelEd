@@ -92,27 +92,26 @@ void LevelEditor::finalize()
 
 void LevelEditor::update(float elapsedTime)
 {
-	void* Node = nullptr;
+	char* Node = nullptr;
 	unsigned int Case;
 
 	Case = mayaReader->read(); //READ AND HANDLE FIRST HEADER
 	switch (Case)
 	{
 	case MayaReader::CREATE:
-		
+	{
 		Case = mayaReader->handleData(Node); //READ SECOND HEADER FOR SPECIFIC TYPES
-		switch (Case) 
+
+		switch (Case)
 		{
 		case MayaReader::MESH_NEW:
 		{
-			printf("KUK\n");
+			createTestMesh(Node);
 			break;
 		}
-			//createMesh(Node);
 
 		case MayaReader::MATERIAL_NEW:
 		{
-			printf("BAJS\n");
 			break;
 		}
 
@@ -126,12 +125,12 @@ void LevelEditor::update(float elapsedTime)
 		default:
 			break;
 		}
-
-
+		break;
+	}
 	case MayaReader::CHANGE:
-
+	{
 		Case = mayaReader->handleData(Node); //READ SECOND HEADER FOR SPECIFIC TYPES
-		switch (Case) 
+		switch (Case)
 		{
 		case MayaReader::MATERAL_CHANGED:
 		case MayaReader::VERTEX_CHANGE:
@@ -141,13 +140,16 @@ void LevelEditor::update(float elapsedTime)
 		default:
 			break;
 		}
-
+		break;
+	}
 	case MayaReader::NUMBER_OF_TYPES:
 			break;
 	default:
 		break;
-	}
 
+	
+	}
+	
 
 
 
@@ -267,9 +269,78 @@ void LevelEditor::createMesh(const void* meshData)
 	//LÄGG TILL: om meshen fanns innan -> ta bort den
 }
 
-void LevelEditor::createTestMesh()
+void LevelEditor::createTestMesh(char* msg)
 {
-	Node * node = _scene->findNode(mayaReader->testMesh->name);
+
+	CreateMesh* mMesh;
+	Vertex *mVertex;
+	Index *mIndex, *mNormalIndex;
+	Normals *mNormal;
+
+
+	mMesh = (CreateMesh*)(msg);
+	
+	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
+	mVertex = new Vertex[mMesh->vertexCount];
+	mIndex = new Index[mMesh->indexCount];
+
+	msg += sizeof(CreateMesh);
+	mVertex = (Vertex*)(msg);
+
+	msg += sizeof(Vertex)*mMesh->vertexCount;
+	mIndex = (Index*)(msg);
+
+	msg += sizeof(Index)*mMesh->indexCount;
+	mNormal = (Normals*)(msg);
+
+	msg += sizeof(Normals)*mMesh->normalCount;
+	mNormalIndex = (Index*)(msg);
+
+
+
+	vertexData * vData = new vertexData[mMesh->indexCount];
+	for (size_t i = 0; i < mMesh->indexCount; i++)
+	{
+		vData[i].x = mVertex[mIndex[i].nr].x;
+		vData[i].y = mVertex[mIndex[i].nr].y;
+		vData[i].z = mVertex[mIndex[i].nr].z;
+		vData[i].nx = mNormal[mNormalIndex[i].nr].x;
+		vData[i].ny	= mNormal[mNormalIndex[i].nr].y;
+		vData[i].nz	= mNormal[mNormalIndex[i].nr].z;
+	}
+
+	//for (size_t i = 0; i < mMesh->vertexCount; i++)
+	//{
+	//	printf("VERTEX POS %d: %f, %f, %f\n", (i+1), mVertex[i].x, mVertex[i].y, mVertex[i].z);
+	//}
+
+	//printf("\n\n");
+
+	//for (size_t i = 0; i < mMesh->indexCount; i++)
+	//{
+	//	printf("VERTEX INDEX %d: %d\n", (i + 1), mIndex[i].nr);
+	//}
+
+	//printf("\n\n");
+
+	//for (size_t i = 0; i < mMesh->normalCount; i++)
+	//{
+	//	printf("NORMAL %d: %f, %f, %f\n", (i + 1), mNormal[i].x, mNormal[i].y, mNormal[i].z);
+	//}
+
+	//printf("\n\n");
+
+	//for (size_t i = 0; i < mMesh->indexCount; i++)
+	//{
+	//	printf("NORMAL INDEX %d: %d\n", (i + 1), mNormalIndex[i].nr);
+	//}
+
+
+
+#pragma region creatingggggg
+
+
+	Node * node = _scene->findNode("KUK");
 	
 	//Material * material = Material::create("res/demo.material");
 	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
@@ -295,17 +366,16 @@ void LevelEditor::createTestMesh()
 	}
 	else
 	{
-		node = Node::create(mayaReader->testMesh->name);
+		node = Node::create("KUK");
 	}
 
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3),
 		VertexFormat::Element(VertexFormat::NORMAL, 3)
 	};
 
-	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mayaReader->testMesh->vertexCount, true);
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 2), mMesh->indexCount, true);
 
 	if (mesh == NULL)
 	{
@@ -314,22 +384,22 @@ void LevelEditor::createTestMesh()
 	}
 
 	mesh->setPrimitiveType(Mesh::TRIANGLES);
-	mesh->setVertexData(mayaReader->testVertexData),
+	mesh->setVertexData(vData),
 		0,
-		(mayaReader->testMesh->vertexCount);
+		(mMesh->indexCount);
 
 	MeshPart * meshPart = mesh->addPart(
 		Mesh::PrimitiveType::TRIANGLES,
 		Mesh::IndexFormat::INDEX32,
-		mayaReader->testMesh->topologyCount,
+		mMesh->indexCount,
 		true
 	);
 
 	//pointer to topologydata ->  (char*)meshData +sizeof(DataType::Mesh) + (sizeof(DataType::Vertex) * ((DataType::Mesh*)meshData)->vertexCount)
 
-	meshPart->setIndexData(mayaReader->testTopology,
+	meshPart->setIndexData(mIndex,
 		0,
-		mayaReader->testMesh->topologyCount
+		mMesh->indexCount
 	);
 
 	Model * model = Model::create(mesh);
@@ -347,4 +417,6 @@ void LevelEditor::createTestMesh()
 	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
 
 	_scene->addNode(node);
+
+#pragma endregion
 }

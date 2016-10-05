@@ -1,6 +1,4 @@
 #pragma once
-namespace headers
-{
 
 	struct MainHeader
 	{
@@ -28,5 +26,9 @@ namespace headers
 	{
 		float x, y, z;
 	};
-
-}
+	struct vertexData
+	{
+		float x, y, z;
+		float nx, ny, nz;
+		//float u, v;
+	};

@@ -111,16 +111,21 @@ MayaReader::~MayaReader()
 	delete msg;
 }
 
-MayaReader::MsgContain MayaReader::handleData(void *& Node) //reference to pointer in order to change the adress
+MayaReader::MsgContain MayaReader::handleData(char *& Node) //reference to pointer in order to change the adress
 {
-	msg += sizeof(headers::MainHeader);
-	printf("%d \n", ((headers::TypeHeader*)msg)->type);
+	msg += sizeof(MainHeader);
 
-	msg += sizeof(headers::TypeHeader);
+	printf("TYPE: %d \n", ((TypeHeader*)msg)->type);
+
+	msg += sizeof(TypeHeader);
 
 	Node = msg;
-
+	
 	return MESH_NEW; //temp
+
+
+
+
 }
 
 void MayaReader::cleanUp()

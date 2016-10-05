@@ -39,7 +39,7 @@ protected:
 
 	void createMesh(const void* vertexData);
 
-	void createTestMesh();
+	void createTestMesh(char * msg);
 
 	/**
 	* @see Game::initialize

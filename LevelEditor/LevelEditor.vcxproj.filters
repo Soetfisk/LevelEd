@@ -107,5 +107,8 @@
     <ClInclude Include="src\structs.h">
       <Filter>src\headers</Filter>
     </ClInclude>
+    <ClInclude Include="VertexData.h">
+      <Filter>src\headers</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

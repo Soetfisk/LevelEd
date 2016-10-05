@@ -40,7 +40,7 @@ public:
 
 							
 	MayaReader::MsgType read(); //this is a call to the circular "pull" function, to get data from maya. 	
-	MayaReader::MsgContain handleData(void *& Node); //compare return with enum, and paramater is the returned node.
+	MayaReader::MsgContain handleData(char *& Node); //compare return with enum, and paramater is the returned node.
 	void cleanUp();
 
 	DataType::Mesh * testMesh;
