@@ -32,15 +32,13 @@ void LevelEditor::initialize()
 	mayaReader = new MayaReader();
 
 	_scene = Scene::create();
-
 	_scene->setAmbientColor(1.0, 1.0, 1.0);
-
 
 	Node * lightnode = Node::create("pointLightShape1");
 	Light * light = Light::createPoint(Vector3(0.5f, 0.5f, 0.5f), 25);
 
 	lightnode->setLight(light);
-	lightnode->translate(Vector3(1.f, 0.f, 0.f));
+	lightnode->translate(Vector3(1.f, 1.f, 0.f));
 
 	_scene->addNode(lightnode);
 
@@ -49,9 +47,9 @@ void LevelEditor::initialize()
 
 #pragma region TESTS
 	
-
 	Camera * camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
+
 	Node * cameraNode = _scene->addNode("camera");
 	cameraNode->setCamera(camera);
 	_scene->setActiveCamera(camera);
@@ -72,7 +70,7 @@ void LevelEditor::initialize()
 
 	//lightNode->rotateX(MATH_DEG_TO_RAD(-45.0f));
 
-	printf("camera translation: %f, %f, %f \n", cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
+	//printf("camera translation: %f, %f, %f \n", cameraNode->getTranslation().x, cameraNode->getTranslation().y, cameraNode->getTranslation().z);
 
 	//printf("dir light: %f, %f, %f \n", lightNode->getForwardVectorView().x, lightNode->getForwardVectorView().y, lightNode->getForwardVectorView().z);
 
@@ -297,7 +295,7 @@ void LevelEditor::createTestMesh(char* msg)
 	mNormalIndex = (Index*)(msg);
 
 
-
+	unsigned int indexList[36];
 	vertexData * vData = new vertexData[mMesh->indexCount];
 	for (size_t i = 0; i < mMesh->indexCount; i++)
 	{
@@ -307,7 +305,23 @@ void LevelEditor::createTestMesh(char* msg)
 		vData[i].nx = mNormal[mNormalIndex[i].nr].x;
 		vData[i].ny	= mNormal[mNormalIndex[i].nr].y;
 		vData[i].nz	= mNormal[mNormalIndex[i].nr].z;
+
+		vData[i].r = 150.f;
+		vData[i].g = 150.f;
+		vData[i].b = 150.f;
+
+		indexList[i] = i;
 	}
+	/*for (size_t i = 0; i < mMesh->vertexCount; i++)
+	{
+		int t = i * 4;
+		vData[i].x = mVertex[i].x;
+		vData[i].y = mVertex[i].y;
+		vData[i].z = mVertex[i].z;
+		vData[i].nx = mNormal[t].x;
+		vData[i].ny = mNormal[t].y;
+		vData[i].nz = mNormal[t].z;
+	}*/
 
 	//for (size_t i = 0; i < mMesh->vertexCount; i++)
 	//{
@@ -372,10 +386,11 @@ void LevelEditor::createTestMesh(char* msg)
 	VertexFormat::Element elements[] =
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
-		VertexFormat::Element(VertexFormat::NORMAL, 3)
+		VertexFormat::Element(VertexFormat::NORMAL, 3),
+		VertexFormat::Element(VertexFormat::COLOR, 3)
 	};
 
-	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 2), mMesh->indexCount, true);
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mMesh->indexCount, true);
 
 	if (mesh == NULL)
 	{
@@ -397,7 +412,7 @@ void LevelEditor::createTestMesh(char* msg)
 
 	//pointer to topologydata ->  (char*)meshData +sizeof(DataType::Mesh) + (sizeof(DataType::Vertex) * ((DataType::Mesh*)meshData)->vertexCount)
 
-	meshPart->setIndexData(mIndex,
+	meshPart->setIndexData(&indexList,
 		0,
 		mMesh->indexCount
 	);
@@ -405,11 +420,8 @@ void LevelEditor::createTestMesh(char* msg)
 	Model * model = Model::create(mesh);
 
 
-
 	if (material)
 		model->setMaterial(material);
-
-	
 
 	node->setDrawable(model);
 	node->translateZ(3.0f);
