@@ -385,3 +385,8 @@ __pycache__/
 *.pyc
 # Cake - Uncomment if you are using it
 # tools/
+LevelEditor/Debug/vc140.idb
+LevelEditor/Debug/LevelEditor.tlog/link.read.1.tlog
+LevelEditor/Debug/LevelEditor.tlog/LevelEditor.write.1u.tlog
+LevelEditor/Debug/LevelEditor.tlog/CL.write.1.tlog
+LevelEditor/Debug/LevelEditor.exp
