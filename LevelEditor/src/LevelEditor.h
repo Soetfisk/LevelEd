@@ -13,7 +13,6 @@ using namespace gameplay;
 class LevelEditor : public Game
 {
 private:
-	Camera * camera;
 	MayaReader * mayaReader;
 	
 	/**
@@ -50,7 +49,7 @@ protected:
 
 	void createMesh(const void* vertexData);
 
-	//void createTestMesh(char * msg);
+	void createTestMesh(char * msg);
 	void createCamera(char * msg);
 
 	/**

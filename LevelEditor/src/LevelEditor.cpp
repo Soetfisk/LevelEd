@@ -48,7 +48,17 @@ void LevelEditor::initialize()
 #pragma region TESTS
 	
 
+	Camera * Camera = Camera::createPerspective(45.0,
+		getAspectRatio(), 1.0f, 100.0f);
 
+	Node * cameraNode = _scene->addNode("Camera");
+	cameraNode->setCamera(Camera);
+	_scene->setActiveCamera(Camera);
+
+	SAFE_RELEASE(Camera);
+
+	cameraNode->translate(0, 1, 5);
+	cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
 
 	
@@ -93,7 +103,7 @@ void LevelEditor::update(float elapsedTime)
 	{
 		case MayaReader::MESH_NEW:
 		{
-			//createTestMesh(Node);
+			createTestMesh(Node);
 			break;
 		}
 
@@ -301,31 +311,31 @@ void LevelEditor::createTestMesh(char* msg)
 		vData[i].nz = mNormal[t].z;
 	}*/
 
-	for (size_t i = 0; i < mMesh->vertexCount; i++)
-	{
-		printf("VERTEX POS %d: %f, %f, %f\n", (i+1), mVertex[i].x, mVertex[i].y, mVertex[i].z);
-	}
+	//for (size_t i = 0; i < mMesh->vertexCount; i++)
+	//{
+	//	printf("VERTEX POS %d: %f, %f, %f\n", (i+1), mVertex[i].x, mVertex[i].y, mVertex[i].z);
+	//}
 
-	printf("\n\n");
+	//printf("\n\n");
 
-	for (size_t i = 0; i < mMesh->indexCount; i++)
-	{
-		printf("VERTEX INDEX %d: %d\n", (i + 1), mIndex[i].nr);
-	}
+	//for (size_t i = 0; i < mMesh->indexCount; i++)
+	//{
+	//	printf("VERTEX INDEX %d: %d\n", (i + 1), mIndex[i].nr);
+	//}
 
-	printf("\n\n");
+	//printf("\n\n");
 
-	for (size_t i = 0; i < mMesh->normalCount; i++)
-	{
-		printf("NORMAL %d: %f, %f, %f\n", (i + 1), mNormal[i].x, mNormal[i].y, mNormal[i].z);
-	}
+	//for (size_t i = 0; i < mMesh->normalCount; i++)
+	//{
+	//	printf("NORMAL %d: %f, %f, %f\n", (i + 1), mNormal[i].x, mNormal[i].y, mNormal[i].z);
+	//}
 
-	printf("\n\n");
+	//printf("\n\n");
 
-	for (size_t i = 0; i < mMesh->indexCount; i++)
-	{
-		printf("NORMAL INDEX %d: %d\n", (i + 1), mNormalIndex[i].nr);
-	}
+	//for (size_t i = 0; i < mMesh->indexCount; i++)
+	//{
+	//	printf("NORMAL INDEX %d: %d\n", (i + 1), mNormalIndex[i].nr);
+	//}
 
 
 
@@ -413,21 +423,12 @@ void LevelEditor::createTestMesh(char* msg)
 
 void LevelEditor::createCamera(char * msg)
 {
-	//Node camNode = Node::create("bajsCamera");
+	Node * camNode = _scene->findNode("Camera");
+	Camera * cam = camNode->getCamera();
 
- 	camera = new Camera(*(Matrix*)msg, (*(Matrix*)(msg + sizeof(doubleMatrix))));
+	cam->setProjectionMatrix(*(Matrix*)msg);
 
 
-	Node * cameraNode = _scene->addNode("camera");
-	
-	cameraNode->setCamera(camera);
-	_scene->setActiveCamera(camera);
-	
-	SAFE_RELEASE(camera);
 
-	
-
-	cameraNode->translate(0, 1, 5);
-	cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
 }

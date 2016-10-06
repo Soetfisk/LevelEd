@@ -113,18 +113,24 @@ MayaReader::~MayaReader()
 
 MayaReader::MsgContain MayaReader::handleData(char *& Node) //reference to pointer in order to change the adress
 {
-	msg += sizeof(MainHeader);
 
-	printf("TYPE: %d \n", ((TypeHeader*)msg)->type);
 
-	MsgContain type = (MsgContain)((TypeHeader*)msg)->type;
+	msg = new char[(10 * 1 << 10) / 4];
 
-	msg += sizeof(TypeHeader);
+	if (circularBuffer->pop(msg, length))
+	{
 
-	Node = msg;
-	
-	return type; //temp
+		printf("TYPE: %d \n", ((TypeHeader*)msg)->type);
 
+		MsgContain type = (MsgContain)((TypeHeader*)msg)->type;
+
+		msg += sizeof(TypeHeader);
+
+		Node = msg;
+
+		return type; //temp
+	}
+	else return NUMBER_OF_SETTINGS;
 
 
 
@@ -142,7 +148,7 @@ void MayaReader::cleanUp()
 //	//I CHANGED ALL DEFINED "REGISTRED" VARIABLES, THEY'RE NOW CALLED "AIDS". 
 //	//THIS "MIGHT" CAUSE PROBLEMS....
 //
-//	msg = new char[(10 * 1 << 10) / 4];
+//	
 //		
 //
 //	if (circularBuffer->pop(msg, length))
