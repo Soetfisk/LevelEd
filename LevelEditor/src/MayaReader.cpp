@@ -117,11 +117,13 @@ MayaReader::MsgContain MayaReader::handleData(char *& Node) //reference to point
 
 	printf("TYPE: %d \n", ((TypeHeader*)msg)->type);
 
+	MsgContain type = (MsgContain)((TypeHeader*)msg)->type;
+
 	msg += sizeof(TypeHeader);
 
 	Node = msg;
 	
-	return MESH_NEW; //temp
+	return type; //temp
 
 
 
@@ -133,21 +135,21 @@ void MayaReader::cleanUp()
 	
 }
 
-MayaReader::MsgType MayaReader::read()
-{
-
-	//CIRCLE BUFFER CONFLICT WITH PHYSICSCONTROLLER.H/CPP
-	//I CHANGED ALL DEFINED "REGISTRED" VARIABLES, THEY'RE NOW CALLED "AIDS". 
-	//THIS "MIGHT" CAUSE PROBLEMS....
-
-	msg = new char[(10 * 1 << 10) / 4];
-		
-
-	if (circularBuffer->pop(msg, length))
-	{
-		//printf("%d \n", (MsgType)(*msg));
-		return (MsgType)(*msg);
-	}
-	else
-		return NUMBER_OF_TYPES; //temp
-}
+//MayaReader::MsgType MayaReader::read()
+//{
+//
+//	//CIRCLE BUFFER CONFLICT WITH PHYSICSCONTROLLER.H/CPP
+//	//I CHANGED ALL DEFINED "REGISTRED" VARIABLES, THEY'RE NOW CALLED "AIDS". 
+//	//THIS "MIGHT" CAUSE PROBLEMS....
+//
+//	msg = new char[(10 * 1 << 10) / 4];
+//		
+//
+//	if (circularBuffer->pop(msg, length))
+//	{
+//		//printf("%d \n", (MsgType)(*msg));
+//		return (MsgType)(*msg);
+//	}
+//	else
+//		return NUMBER_OF_TYPES; //temp
+//}

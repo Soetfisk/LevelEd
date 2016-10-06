@@ -15,20 +15,20 @@ class MayaReader
 public:
 	MayaReader();
 	~MayaReader();
-	enum MsgType
-	{
-		CREATE,
-		CHANGE,
+	//enum MsgType
+	//{
+	//	CREATE,
+	//	CHANGE,
 
-		NUMBER_OF_TYPES
-	};
+	//	NUMBER_OF_TYPES
+	//};
 
 	enum MsgContain
 	{
+		MESH_NEW,
+		CAMERA_NEW,
 		MATERIAL_NEW,
 		TRANSFORM_NEW,
-		CAMERA_NEW,
-		MESH_NEW,
 		TEXTURE_NEW,
 		MATERAL_CHANGED,
 		VERTEX_CHANGE,
@@ -39,7 +39,7 @@ public:
 	};
 
 							
-	MayaReader::MsgType read(); //this is a call to the circular "pull" function, to get data from maya. 	
+	//MayaReader::MsgType read(); //this is a call to the circular "pull" function, to get data from maya. 	
 	MayaReader::MsgContain handleData(char *& Node); //compare return with enum, and paramater is the returned node.
 	void cleanUp();
 

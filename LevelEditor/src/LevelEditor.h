@@ -12,6 +12,17 @@ using namespace gameplay;
 */
 class LevelEditor : public Game
 {
+private:
+	Camera * camera;
+	MayaReader * mayaReader;
+	
+	/**
+	* Draws the scene each frame.
+	*/
+	bool drawScene(Node* node);
+
+	Scene* _scene;
+	bool _wireframe;
 public:
 
 	/**
@@ -39,7 +50,8 @@ protected:
 
 	void createMesh(const void* vertexData);
 
-	void createTestMesh(char * msg);
+	//void createTestMesh(char * msg);
+	void createCamera(char * msg);
 
 	/**
 	* @see Game::initialize
@@ -61,17 +73,6 @@ protected:
 	*/
 	void render(float elapsedTime);
 
-private:
-
-	MayaReader * mayaReader;
-
-	/**
-	* Draws the scene each frame.
-	*/
-	bool drawScene(Node* node);
-
-	Scene* _scene;
-	bool _wireframe;
 };
 
 #endif
