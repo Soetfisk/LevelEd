@@ -375,6 +375,10 @@ private:
     mutable int _bits;
     Node* _node;
     std::list<Camera::Listener*>* _listeners;
+
+	public:
+		Camera::Camera(Matrix transform, Matrix projection) { _view = transform; _projection = projection; }
+
 };
 
 }

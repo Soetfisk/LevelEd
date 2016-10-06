@@ -245,51 +245,51 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 //	//LÄGG TILL: om meshen fanns innan -> ta bort den
 //}
 
-//void LevelEditor::createTestMesh(char* msg)
-//{
-//
-//	CreateMesh* mMesh;
-//	Vertex *mVertex;
-//	Index *mIndex, *mNormalIndex;
-//	Normals *mNormal;
-//
-//
-//	mMesh = (CreateMesh*)(msg);
-//	
-//	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
-//	mVertex = new Vertex[mMesh->vertexCount];
-//	mIndex = new Index[mMesh->indexCount];
-//
-//	msg += sizeof(CreateMesh);
-//	mVertex = (Vertex*)(msg);
-//
-//	msg += sizeof(Vertex)*mMesh->vertexCount;
-//	mIndex = (Index*)(msg);
-//
-//	msg += sizeof(Index)*mMesh->indexCount;
-//	mNormal = (Normals*)(msg);
-//
-//	msg += sizeof(Normals)*mMesh->normalCount;
-//	mNormalIndex = (Index*)(msg);
-//
-//
-//	unsigned int indexList[36];
-//	vertexData * vData = new vertexData[mMesh->indexCount];
-//	for (size_t i = 0; i < mMesh->indexCount; i++)
-//	{
-//		vData[i].x = mVertex[mIndex[i].nr].x;
-//		vData[i].y = mVertex[mIndex[i].nr].y;
-//		vData[i].z = mVertex[mIndex[i].nr].z;
-//		vData[i].nx = mNormal[mNormalIndex[i].nr].x;
-//		vData[i].ny	= mNormal[mNormalIndex[i].nr].y;
-//		vData[i].nz	= mNormal[mNormalIndex[i].nr].z;
-//
-//		vData[i].r = 150.f;
-//		vData[i].g = 150.f;
-//		vData[i].b = 150.f;
-//
-//		indexList[i] = i;
-//	}
+void LevelEditor::createTestMesh(char* msg)
+{
+
+	CreateMesh* mMesh;
+	Vertex *mVertex;
+	Index *mIndex, *mNormalIndex;
+	Normals *mNormal;
+
+
+	mMesh = (CreateMesh*)(msg);
+	
+	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
+	mVertex = new Vertex[mMesh->vertexCount];
+	mIndex = new Index[mMesh->indexCount];
+
+	msg += sizeof(CreateMesh);
+	mVertex = (Vertex*)(msg);
+
+	msg += sizeof(Vertex)*mMesh->vertexCount;
+	mIndex = (Index*)(msg);
+
+	msg += sizeof(Index)*mMesh->indexCount;
+	mNormal = (Normals*)(msg);
+
+	msg += sizeof(Normals)*mMesh->normalCount;
+	mNormalIndex = (Index*)(msg);
+
+
+	unsigned int indexList[36];
+	vertexData * vData = new vertexData[mMesh->indexCount];
+	for (size_t i = 0; i < mMesh->indexCount; i++)
+	{
+		vData[i].x = mVertex[mIndex[i].nr].x;
+		vData[i].y = mVertex[mIndex[i].nr].y;
+		vData[i].z = mVertex[mIndex[i].nr].z;
+		vData[i].nx = mNormal[mNormalIndex[i].nr].x;
+		vData[i].ny	= mNormal[mNormalIndex[i].nr].y;
+		vData[i].nz	= mNormal[mNormalIndex[i].nr].z;
+
+		vData[i].r = 150.f;
+		vData[i].g = 150.f;
+		vData[i].b = 150.f;
+
+		indexList[i] = i;
+	}
 	/*for (size_t i = 0; i < mMesh->vertexCount; i++)
 	{
 		int t = i * 4;
@@ -301,126 +301,125 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 		vData[i].nz = mNormal[t].z;
 	}*/
 
-	//for (size_t i = 0; i < mMesh->vertexCount; i++)
-	//{
-	//	printf("VERTEX POS %d: %f, %f, %f\n", (i+1), mVertex[i].x, mVertex[i].y, mVertex[i].z);
-	//}
+	for (size_t i = 0; i < mMesh->vertexCount; i++)
+	{
+		printf("VERTEX POS %d: %f, %f, %f\n", (i+1), mVertex[i].x, mVertex[i].y, mVertex[i].z);
+	}
 
-	//printf("\n\n");
+	printf("\n\n");
 
-	//for (size_t i = 0; i < mMesh->indexCount; i++)
-	//{
-	//	printf("VERTEX INDEX %d: %d\n", (i + 1), mIndex[i].nr);
-	//}
+	for (size_t i = 0; i < mMesh->indexCount; i++)
+	{
+		printf("VERTEX INDEX %d: %d\n", (i + 1), mIndex[i].nr);
+	}
 
-	//printf("\n\n");
+	printf("\n\n");
 
-	//for (size_t i = 0; i < mMesh->normalCount; i++)
-	//{
-	//	printf("NORMAL %d: %f, %f, %f\n", (i + 1), mNormal[i].x, mNormal[i].y, mNormal[i].z);
-	//}
+	for (size_t i = 0; i < mMesh->normalCount; i++)
+	{
+		printf("NORMAL %d: %f, %f, %f\n", (i + 1), mNormal[i].x, mNormal[i].y, mNormal[i].z);
+	}
 
-	//printf("\n\n");
+	printf("\n\n");
 
-	//for (size_t i = 0; i < mMesh->indexCount; i++)
-	//{
-	//	printf("NORMAL INDEX %d: %d\n", (i + 1), mNormalIndex[i].nr);
-	//}
+	for (size_t i = 0; i < mMesh->indexCount; i++)
+	{
+		printf("NORMAL INDEX %d: %d\n", (i + 1), mNormalIndex[i].nr);
+	}
 
 
 
-//#pragma region creatingggggg
-//
-//
-//	Node * node = _scene->findNode("KUK");
-//	
-//	//Material * material = Material::create("res/demo.material");
-//	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
-//
-//	RenderState::StateBlock* block = RenderState::StateBlock::create();
-//	block->setCullFace(true);
-//	block->setDepthTest(true);
-//	material->setStateBlock(block);
-//	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
-//	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
-//	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
-//
-//	Node* lightNode = _scene->findNode("pointLightShape1");
-//	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
-//	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
-//	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
-//	
-//
-//	if (node)
-//	{
-//		//ta bort vertisdata
-//		//läs in material
-//	}
-//	else
-//	{
-//		node = Node::create("KUK");
-//	}
-//
-//	VertexFormat::Element elements[] =
-//	{
-//		VertexFormat::Element(VertexFormat::POSITION, 3),
-//		VertexFormat::Element(VertexFormat::NORMAL, 3),
-//		VertexFormat::Element(VertexFormat::COLOR, 3)
-//	};
-//
-//	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mMesh->indexCount, true);
-//
-//	if (mesh == NULL)
-//	{
-//		GP_ERROR("Failed to create mesh.");
-//		return;
-//	}
-//
-//	mesh->setPrimitiveType(Mesh::TRIANGLES);
-//	mesh->setVertexData(vData),
-//		0,
-//		(mMesh->indexCount);
-//
-//	MeshPart * meshPart = mesh->addPart(
-//		Mesh::PrimitiveType::TRIANGLES,
-//		Mesh::IndexFormat::INDEX32,
-//		mMesh->indexCount,
-//		true
-//	);
-//
-//	//pointer to topologydata ->  (char*)meshData +sizeof(DataType::Mesh) + (sizeof(DataType::Vertex) * ((DataType::Mesh*)meshData)->vertexCount)
-//
-//	meshPart->setIndexData(&indexList,
-//		0,
-//		mMesh->indexCount
-//	);
-//
-//	Model * model = Model::create(mesh);
-//
-//
-//	if (material)
-//		model->setMaterial(material);
-//
-//	node->setDrawable(model);
-//	node->translateZ(3.0f);
-//
-//	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
-//
-//	_scene->addNode(node);
-//
-//#pragma endregion
-//}
+#pragma region creatingggggg
+
+
+	Node * node = _scene->findNode("KUK");
+	
+	//Material * material = Material::create("res/demo.material");
+	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
+
+	RenderState::StateBlock* block = RenderState::StateBlock::create();
+	block->setCullFace(true);
+	block->setDepthTest(true);
+	material->setStateBlock(block);
+	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
+	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
+	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+	Node* lightNode = _scene->findNode("pointLightShape1");
+	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
+	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
+	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+	
+
+	if (node)
+	{
+		//ta bort vertisdata
+		//läs in material
+	}
+	else
+	{
+		node = Node::create("KUK");
+	}
+
+	VertexFormat::Element elements[] =
+	{
+		VertexFormat::Element(VertexFormat::POSITION, 3),
+		VertexFormat::Element(VertexFormat::NORMAL, 3),
+		VertexFormat::Element(VertexFormat::COLOR, 3)
+	};
+
+	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mMesh->indexCount, true);
+
+	if (mesh == NULL)
+	{
+		GP_ERROR("Failed to create mesh.");
+		return;
+	}
+
+	mesh->setPrimitiveType(Mesh::TRIANGLES);
+	mesh->setVertexData(vData),
+		0,
+		(mMesh->indexCount);
+
+	MeshPart * meshPart = mesh->addPart(
+		Mesh::PrimitiveType::TRIANGLES,
+		Mesh::IndexFormat::INDEX32,
+		mMesh->indexCount,
+		true
+	);
+
+	//pointer to topologydata ->  (char*)meshData +sizeof(DataType::Mesh) + (sizeof(DataType::Vertex) * ((DataType::Mesh*)meshData)->vertexCount)
+
+	meshPart->setIndexData(&indexList,
+		0,
+		mMesh->indexCount
+	);
+
+	Model * model = Model::create(mesh);
+
+
+	if (material)
+		model->setMaterial(material);
+
+	node->setDrawable(model);
+	node->translateZ(3.0f);
+
+	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
+
+	_scene->addNode(node);
+
+#pragma endregion
+}
 
 void LevelEditor::createCamera(char * msg)
 {
 	//Node camNode = Node::create("bajsCamera");
 
- 	camera = Camera::createPerspective(45.0,
-		getAspectRatio(), 1.0f, 100.0f);
-	
-	Transform * camTrance = new Transform(;
+ 	camera = new Camera(*(Matrix*)msg, (*(Matrix*)(msg + sizeof(doubleMatrix))));
+
 
 	Node * cameraNode = _scene->addNode("camera");
+	
 	cameraNode->setCamera(camera);
 	_scene->setActiveCamera(camera);
 	

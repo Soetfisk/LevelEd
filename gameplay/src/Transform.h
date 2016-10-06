@@ -130,7 +130,9 @@ public:
     {
     public:
 
+
         virtual ~Listener() { }
+
 
         /**
          * Handles when an transform has changed.
@@ -880,6 +882,8 @@ protected:
      */
     mutable Matrix _matrix;
     
+	
+
     /** 
      * Matrix dirty bits flag.
      */
@@ -889,6 +893,9 @@ protected:
      * List of TransformListener's on the Transform.
      */
     std::list<TransformListener>* _listeners;
+
+public:
+	void setMatrix(Matrix matrix) { _matrix = matrix; }
 
 private:
    

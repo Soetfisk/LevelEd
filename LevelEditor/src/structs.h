@@ -33,3 +33,12 @@
 		float r, g, b;
 		//float u, v;
 	};
+	struct doubleMatrix
+	{
+		double m[16];
+	};
+
+	struct floatMatrix
+	{
+		float m[16];
+	};
