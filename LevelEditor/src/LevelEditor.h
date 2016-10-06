@@ -47,8 +47,9 @@ public:
 protected:
 
 
-	void createMesh(const void* vertexData);
+	//void createMesh(const void* vertexData);
 
+	void modifyTransform(char * msg);
 	void createTestMesh(char * msg);
 	void createCamera(char * msg);
 

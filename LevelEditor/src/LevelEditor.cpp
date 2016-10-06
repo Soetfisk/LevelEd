@@ -51,7 +51,7 @@ void LevelEditor::initialize()
 	Camera * Camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
-	Node * cameraNode = _scene->addNode("Camera");
+	Node * cameraNode = _scene->addNode("persp");
 	cameraNode->setCamera(Camera);
 	_scene->setActiveCamera(Camera);
 
@@ -258,6 +258,21 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 void LevelEditor::createTestMesh(char* msg)
 {
 
+
+
+	Node * node = _scene->findNode((msg + sizeof(unsigned int)));
+	if (node)
+	{
+		//ta bort vertisdata
+		//läs in material
+	}
+	else
+	{
+		node = Node::create((msg + sizeof(unsigned int)));
+	}
+
+	msg += (*(unsigned int*)msg + sizeof(unsigned int));
+
 	CreateMesh* mMesh;
 	Vertex *mVertex;
 	Index *mIndex, *mNormalIndex;
@@ -282,6 +297,7 @@ void LevelEditor::createTestMesh(char* msg)
 	msg += sizeof(Normals)*mMesh->normalCount;
 	mNormalIndex = (Index*)(msg);
 
+	msg += sizeof(Index)*mMesh->indexCount;
 
 	unsigned int indexList[36];
 	vertexData * vData = new vertexData[mMesh->indexCount];
@@ -342,7 +358,6 @@ void LevelEditor::createTestMesh(char* msg)
 #pragma region creatingggggg
 
 
-	Node * node = _scene->findNode("KUK");
 	
 	//Material * material = Material::create("res/demo.material");
 	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
@@ -361,15 +376,6 @@ void LevelEditor::createTestMesh(char* msg)
 	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
 	
 
-	if (node)
-	{
-		//ta bort vertisdata
-		//läs in material
-	}
-	else
-	{
-		node = Node::create("KUK");
-	}
 
 	VertexFormat::Element elements[] =
 	{
@@ -407,6 +413,8 @@ void LevelEditor::createTestMesh(char* msg)
 
 	Model * model = Model::create(mesh);
 
+	
+	node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
 
 	if (material)
 		model->setMaterial(material);
@@ -423,11 +431,59 @@ void LevelEditor::createTestMesh(char* msg)
 
 void LevelEditor::createCamera(char * msg)
 {
-	Node * camNode = _scene->findNode("Camera");
-	Camera * cam = camNode->getCamera();
+	Node * node;
+	node = _scene->findNode(msg + sizeof(unsigned int));
 
-	cam->setProjectionMatrix(*(Matrix*)msg);
+	Camera * camera;
 
+	if (!node)
+	{
+		node = _scene->addNode(msg + sizeof(unsigned int));
+		camera = Camera::createPerspective(45.0,
+			getAspectRatio(), 1.0f, 100.0f);
+		node->setCamera(camera);
+	}
+	else
+	{
+		camera = node->getCamera();
+	}
+	msg += *(unsigned int*)msg + sizeof(unsigned int);
+
+	camera->setProjectionMatrix(*(Matrix*)msg);
+	msg += sizeof(Matrix);
+	
+	node->set({ 0.0, 0.0, 0.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
+	_scene->setActiveCamera(camera);
+
+	SAFE_RELEASE(camera);
+
+}
+
+void LevelEditor::modifyTransform(char * msg)
+{
+
+	Node * node;
+	node = _scene->findNode(msg + sizeof(unsigned int));
+
+	//if (transNode)
+	//{
+	//	Vector3 translate((float*)msg)
+
+	//	Quaternion rot()
+	//}
+
+	//float * translate;
+	//float * scale;
+	//float * rotationQuat;
+
+	//translate = ((float*)(msg));
+	//msg += sizeof(float) * 3;
+
+	//scale = ((float*)(msg));
+	//msg += sizeof(float) * 3;
+
+	//rotationQuat = ((float*)(msg));
+	//msg += sizeof(float) * 4;
 
 
 
