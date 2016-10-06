@@ -132,7 +132,7 @@ void LevelEditor::update(float elapsedTime)
 
 	// Rotate model
 	//_scene->findNode("box")->rotateY(MATH_DEG_TO_RAD((float)elapsedTime / 1000.0f * 180.0f));
-}
+
 
 void LevelEditor::render(float elapsedTime)
 {
@@ -417,14 +417,16 @@ void LevelEditor::createCamera(char * msg)
 
  	camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
-
 	
+	Transform * camTrance = new Transform(;
 
 	Node * cameraNode = _scene->addNode("camera");
 	cameraNode->setCamera(camera);
 	_scene->setActiveCamera(camera);
 	
 	SAFE_RELEASE(camera);
+
+	
 
 	cameraNode->translate(0, 1, 5);
 	cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
