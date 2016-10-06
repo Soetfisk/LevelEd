@@ -20,6 +20,11 @@
 		unsigned int uvCount;
 		unsigned int uvIndexCount;
 	};
+	struct Transformation
+	{
+		unsigned int nameLength;
+		unsigned int modified;
+	};
 	struct Vertex
 	{
 		float x, y, z;

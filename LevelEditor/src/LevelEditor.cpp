@@ -51,7 +51,7 @@ void LevelEditor::initialize()
 	Camera * Camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
-	Node * cameraNode = _scene->addNode("k");
+	Node * cameraNode = _scene->addNode("p");
 	cameraNode->setCamera(Camera);
 	_scene->setActiveCamera(Camera);
 
@@ -112,7 +112,11 @@ void LevelEditor::update(float elapsedTime)
 			break;
 		}
 
-		case MayaReader::TRANSFORM_NEW:
+		case MayaReader::TRANSFORM:
+		{
+			modifyTransform(Node);
+			break;
+		}
 		case MayaReader::CAMERA_NEW:
 		{
 			createCamera(Node);
@@ -285,7 +289,7 @@ void LevelEditor::createTestMesh(char* msg)
 	mMesh = (CreateMesh*)(msg);
 	msg += mMesh->nameLength + sizeof(CreateMesh);
 	
-	node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
+	node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
 	msg += sizeof(float) * 10;
 
 	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
@@ -441,7 +445,7 @@ void LevelEditor::createCamera(char * msg)
 	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode("k"); //just checking the first place in the char pointer
+	node = _scene->findNode("p"); //just checking the first place in the char pointer
 
 	Camera * camera;
 
@@ -471,15 +475,17 @@ void LevelEditor::createCamera(char * msg)
 void LevelEditor::modifyTransform(char * msg)
 {
 
-	char * name = (msg + sizeof(unsigned int));
-	name[*(unsigned int*)msg + 1] = '\0';
+	char * name = (msg + sizeof(Transformation));
+	unsigned int * kuk = (unsigned int*)msg;
+	name[*(unsigned int*)msg] = '\0';
 	Node * node;
 	node = _scene->findNode(name); //just checking the first place in the char pointer
-	
-	unsigned int Case = (*(unsigned int*)msg);
-	msg += sizeof(unsigned int);
+	//msg += sizeof(unsigned int);
 
-	msg += *(unsigned int*)msg + sizeof(unsigned int);
+	msg += sizeof(unsigned int);
+	unsigned int Case = (*(unsigned int*)msg);
+
+	msg += *kuk + sizeof(unsigned int);
 
 
 	switch (Case)
@@ -492,7 +498,7 @@ void LevelEditor::modifyTransform(char * msg)
 		break;
 	case MayaReader::ALL:
 	{
-		node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
+		node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
 		break;
 	}
 
