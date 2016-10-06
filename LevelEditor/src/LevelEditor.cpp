@@ -51,7 +51,7 @@ void LevelEditor::initialize()
 	Camera * Camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
-	Node * cameraNode = _scene->addNode("persp");
+	Node * cameraNode = _scene->addNode("k");
 	cameraNode->setCamera(Camera);
 	_scene->setActiveCamera(Camera);
 
@@ -440,9 +440,8 @@ void LevelEditor::createCamera(char * msg)
 	char * name = (msg + sizeof(unsigned int));
 	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
-	printf("%s", (msg + sizeof(unsigned int)));
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode("persp"); //just checking the first place in the char pointer
+	node = _scene->findNode("k"); //just checking the first place in the char pointer
 
 	Camera * camera;
 
@@ -472,15 +471,34 @@ void LevelEditor::createCamera(char * msg)
 void LevelEditor::modifyTransform(char * msg)
 {
 
+	char * name = (msg + sizeof(unsigned int));
+	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
-	node = _scene->findNode(msg + sizeof(unsigned int));
+	node = _scene->findNode(name); //just checking the first place in the char pointer
+	
+	unsigned int Case = (*(unsigned int*)msg);
+	msg += sizeof(unsigned int);
 
-	//if (transNode)
-	//{
-	//	Vector3 translate((float*)msg)
+	msg += *(unsigned int*)msg + sizeof(unsigned int);
 
-	//	Quaternion rot()
-	//}
+
+	switch (Case)
+	{
+	case MayaReader::SCALE:
+		break;
+	case MayaReader::ROTATION:
+		break;
+	case MayaReader::TRANSLATION:
+		break;
+	case MayaReader::ALL:
+	{
+		node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
+		break;
+	}
+
+	default:
+		break; //självmord
+	}
 
 	//float * translate;
 	//float * scale;

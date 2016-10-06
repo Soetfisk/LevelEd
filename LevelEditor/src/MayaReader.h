@@ -15,13 +15,19 @@ class MayaReader
 public:
 	MayaReader();
 	~MayaReader();
-	//enum MsgType
-	//{
-	//	CREATE,
-	//	CHANGE,
+	enum TransformType
+	{
+		SCALE,
+		ROTATION,
+		TRANSLATION,
+		ALL,
 
-	//	NUMBER_OF_TYPES
-	//};
+		SCALE_ROTATION,
+		SCALE_TRANSLATION,
+		ROTATION_TRANSLATION,
+
+		NUMBER_OF_TYPES
+	};
 
 	enum MsgContain
 	{
