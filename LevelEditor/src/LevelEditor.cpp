@@ -115,7 +115,7 @@ void LevelEditor::update(float elapsedTime)
 		case MayaReader::TRANSFORM_NEW:
 		case MayaReader::CAMERA_NEW:
 		{
-
+			createCamera(Node);
 			break;
 		}
 
@@ -257,10 +257,12 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 
 void LevelEditor::createTestMesh(char* msg)
 {
+ 
+	char * name = (msg + sizeof(CreateMesh));
+	name[*(unsigned int*)msg + 1] = '\0';
 
-
-
-	Node * node = _scene->findNode((msg + sizeof(unsigned int)));
+	//Node * node = _scene->findNode((msg + sizeof(unsigned int)));
+	Node * node = _scene->findNode(name);
 	if (node)
 	{
 		//ta bort vertisdata
@@ -268,10 +270,11 @@ void LevelEditor::createTestMesh(char* msg)
 	}
 	else
 	{
-		node = Node::create((msg + sizeof(unsigned int)));
+		node = Node::create(name);
 	}
 
-	msg += (*(unsigned int*)msg + sizeof(unsigned int));
+	//msg += (*(unsigned int*)msg + sizeof(unsigned int));
+	//msg += (*(unsigned int*)msg + sizeof(CreateMesh));
 
 	CreateMesh* mMesh;
 	Vertex *mVertex;
@@ -280,12 +283,16 @@ void LevelEditor::createTestMesh(char* msg)
 
 
 	mMesh = (CreateMesh*)(msg);
+	msg += mMesh->nameLength + sizeof(CreateMesh);
 	
+	node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
+	msg += sizeof(float) * 10;
+
 	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
 	mVertex = new Vertex[mMesh->vertexCount];
 	mIndex = new Index[mMesh->indexCount];
 
-	msg += sizeof(CreateMesh);
+	//msg += sizeof(CreateMesh);
 	mVertex = (Vertex*)(msg);
 
 	msg += sizeof(Vertex)*mMesh->vertexCount;
@@ -414,7 +421,6 @@ void LevelEditor::createTestMesh(char* msg)
 	Model * model = Model::create(mesh);
 
 	
-	node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[8])); //set translation values
 
 	if (material)
 		model->setMaterial(material);
@@ -431,8 +437,12 @@ void LevelEditor::createTestMesh(char* msg)
 
 void LevelEditor::createCamera(char * msg)
 {
+	char * name = (msg + sizeof(unsigned int));
+	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
-	node = _scene->findNode(msg + sizeof(unsigned int));
+	printf("%s", (msg + sizeof(unsigned int)));
+	//node = _scene->findNode(msg + sizeof(unsigned int));
+	node = _scene->findNode("persp"); //just checking the first place in the char pointer
 
 	Camera * camera;
 
@@ -451,8 +461,8 @@ void LevelEditor::createCamera(char * msg)
 
 	camera->setProjectionMatrix(*(Matrix*)msg);
 	msg += sizeof(Matrix);
-	
-	node->set({ 0.0, 0.0, 0.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
+
+	node->set({ 1.0, 1.0, 1.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
 	_scene->setActiveCamera(camera);
 
 	SAFE_RELEASE(camera);
