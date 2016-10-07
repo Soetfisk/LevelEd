@@ -52,6 +52,9 @@ protected:
 	void modifyTransform(char * msg);
 	void createTestMesh(char * msg);
 	void createCamera(char * msg);
+    void createMaterial(char* msg);
+    void createTexture(char * msg);
+
 
 	/**
 	* @see Game::initialize

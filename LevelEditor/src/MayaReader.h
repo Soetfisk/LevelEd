@@ -26,27 +26,28 @@ public:
 		SCALE_TRANSLATION,
 		ROTATION_TRANSLATION,
 
-		NUMBER_OF_TYPES
+		NUMBER_OF_TYPES 
 	};
 
 	enum MsgContain
 	{
 		MESH_NEW,
 		CAMERA_NEW,
-		MATERIAL_NEW,
 		TEXTURE_NEW,
+		MATERIAL_NEW,
 		TRANSFORM,
-		MATERAL_CHANGED,
 		VERTEX_CHANGE,
-		CAMERA_CHANGED,
+        TEXTURE_CHANGE,
+		MATERAL_CHANGE,
+        CAMERA_CHANGE,
 		DELETED,
 
 		NUMBER_OF_SETTINGS //if you wanna looop them all
 	};
 
 							
-	//MayaReader::MsgType read(); //this is a call to the circular "pull" function, to get data from maya. 	
-	MayaReader::MsgContain handleData(char *& Node); //compare return with enum, and paramater is the returned node.
+
+	MayaReader::MsgContain handleData(char *& msg); 	//this is a call to the circular "pull" function, to get data from maya. Returns what kind of msg it is, "msg" recieves the msg adress
 	void cleanUp();
 
 	DataType::Mesh * testMesh;

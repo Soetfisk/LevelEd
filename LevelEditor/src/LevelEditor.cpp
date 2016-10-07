@@ -51,7 +51,7 @@ void LevelEditor::initialize()
 	Camera * Camera = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
-	Node * cameraNode = _scene->addNode("p");
+	Node * cameraNode = _scene->addNode("persp");
 	cameraNode->setCamera(Camera);
 	_scene->setActiveCamera(Camera);
 
@@ -92,60 +92,53 @@ void LevelEditor::finalize()
 
 void LevelEditor::update(float elapsedTime)
 {
-	char* Node = nullptr;
-	unsigned int Case;
+	char* msg = nullptr;
+    MayaReader::MsgContain type = mayaReader->handleData(msg); //READ AND HANDLE TYPEHEADER
 
-	Case = mayaReader->handleData(Node); //READ AND HANDLE FIRST HEADER
-
-		 //READ SECOND HEADER FOR SPECIFIC TYPES
-
-	switch (Case)
+	switch (type)
 	{
 		case MayaReader::MESH_NEW:
 		{
-			createTestMesh(Node);
-			break;
-		}
-
-		case MayaReader::MATERIAL_NEW:
-		{
-			break;
-		}
-
-		case MayaReader::TRANSFORM:
-		{
-			modifyTransform(Node);
+			createTestMesh(msg);
 			break;
 		}
 		case MayaReader::CAMERA_NEW:
 		{
-			createCamera(Node);
+			createCamera(msg);
+			break;
+		}
+		case MayaReader::TEXTURE_NEW:
+        {
+            createTexture(msg);
+            break;
+        }
+		case MayaReader::MATERIAL_NEW:
+		{
+            createMaterial(msg);
+			break;
+		}
+		case MayaReader::TRANSFORM:
+		{
+			modifyTransform(msg);
 			break;
 		}
 
 
-		case MayaReader::TEXTURE_NEW:
 
-		case MayaReader::NUMBER_OF_SETTINGS:
-			break;
-		case MayaReader::MATERAL_CHANGED:
 		case MayaReader::VERTEX_CHANGE:
-		case MayaReader::CAMERA_CHANGED:
-		case MayaReader::DELETED:
+		case MayaReader::CAMERA_CHANGE:
+        case MayaReader::TEXTURE_CHANGE:
+		case MayaReader::MATERAL_CHANGE:
+        case MayaReader::DELETED:
 
 		default:
 			break;
 	}
 
 	
-	}
+}
 	
 
-
-
-
-	// Rotate model
-	//_scene->findNode("box")->rotateY(MATH_DEG_TO_RAD((float)elapsedTime / 1000.0f * 180.0f));
 
 
 void LevelEditor::render(float elapsedTime)
@@ -262,8 +255,10 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 void LevelEditor::createTestMesh(char* msg)
 {
  
+   
+
 	char * name = (msg + sizeof(CreateMesh));
-	name[*(unsigned int*)msg + 1] = '\0';
+	name[*(unsigned int*)msg] = '\0';
 
 	//Node * node = _scene->findNode((msg + sizeof(unsigned int)));
 	Node * node = _scene->findNode(name);
@@ -284,6 +279,7 @@ void LevelEditor::createTestMesh(char* msg)
 	Vertex *mVertex;
 	Index *mIndex, *mNormalIndex;
 	Normals *mNormal;
+    unsigned int * indexList;
 
 
 	mMesh = (CreateMesh*)(msg);
@@ -310,7 +306,8 @@ void LevelEditor::createTestMesh(char* msg)
 
 	msg += sizeof(Index)*mMesh->indexCount;
 
-	unsigned int indexList[36];
+	indexList = new unsigned int[mMesh->indexCount];
+
 	vertexData * vData = new vertexData[mMesh->indexCount];
 	for (size_t i = 0; i < mMesh->indexCount; i++)
 	{
@@ -417,7 +414,7 @@ void LevelEditor::createTestMesh(char* msg)
 
 	//pointer to topologydata ->  (char*)meshData +sizeof(DataType::Mesh) + (sizeof(DataType::Vertex) * ((DataType::Mesh*)meshData)->vertexCount)
 
-	meshPart->setIndexData(&indexList,
+	meshPart->setIndexData(indexList,
 		0,
 		mMesh->indexCount
 	);
@@ -436,6 +433,7 @@ void LevelEditor::createTestMesh(char* msg)
 
 	_scene->addNode(node);
 
+    delete indexList;
 #pragma endregion
 }
 
@@ -445,7 +443,7 @@ void LevelEditor::createCamera(char * msg)
 	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode("p"); //just checking the first place in the char pointer
+	node = _scene->findNode(name); //just checking the first place in the char pointer
 
 	Camera * camera;
 
@@ -470,6 +468,27 @@ void LevelEditor::createCamera(char * msg)
 
 	SAFE_RELEASE(camera);
 
+
+}
+
+void LevelEditor::createMaterial(char * msg)
+{
+    char * name = (msg + sizeof(Transformation));
+    unsigned int * kuk = (unsigned int*)msg;
+    name[*(unsigned int*)msg] = '\0';
+    Node * node;
+}
+
+void LevelEditor::createTexture(char * msg)
+{
+    char * name = (msg + sizeof(Transformation));
+    unsigned int * kuk = (unsigned int*)msg;
+    name[*(unsigned int*)msg] = '\0';
+    Node * node;
+
+    //Texture * tex = Texture::create
+
+
 }
 
 void LevelEditor::modifyTransform(char * msg)
@@ -482,30 +501,48 @@ void LevelEditor::modifyTransform(char * msg)
 	node = _scene->findNode(name); //just checking the first place in the char pointer
 	//msg += sizeof(unsigned int);
 
-	msg += sizeof(unsigned int);
-	unsigned int Case = (*(unsigned int*)msg);
+    if (node)
+    {
 
-	msg += *kuk + sizeof(unsigned int);
+        msg += sizeof(unsigned int);
+        unsigned int Case = (*(unsigned int*)msg);
+
+        msg += *kuk + sizeof(unsigned int);
 
 
-	switch (Case)
-	{
-	case MayaReader::SCALE:
-		break;
-	case MayaReader::ROTATION:
-		break;
-	case MayaReader::TRANSLATION:
-		break;
-	case MayaReader::ALL:
-	{
-		node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
-		break;
-	}
+        switch (Case)
+        {
+        case MayaReader::SCALE:
+            break;
+        case MayaReader::ROTATION:
+            break;
+        case MayaReader::TRANSLATION:
+            break;
+        case MayaReader::ALL:
+        {
+            bool derp = node->isStatic();
+            static unsigned int cameraMsgCount = 0;
+            
+            if (strcmp(name, "persp") == 0)
+            {
+                cameraMsgCount++;
+                printf("%d", cameraMsgCount);
+            }
 
-	default:
-		break; //självmord
-	}
 
+            node->setScale((float*)msg);
+            node->setRotation(Quaternion(&((float*)msg)[3]));
+            node->setTranslation((&((float*)msg)[7]));
+
+            //node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
+            break;
+        }
+
+        default:
+            break; //självmord
+        }
+
+    }
 	//float * translate;
 	//float * scale;
 	//float * rotationQuat;
