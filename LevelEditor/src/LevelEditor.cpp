@@ -382,8 +382,10 @@ void LevelEditor::createTestMesh(char* msg)
 	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
 	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
 	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
-	
 
+
+	material->getParameter("u_diffuseColor")->setValue(Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+	material->getParameter("u_ambientColor")->setValue(Vector3(0.5f, 0.5f, 0.5f));
 
 	VertexFormat::Element elements[] =
 	{
@@ -473,20 +475,69 @@ void LevelEditor::createCamera(char * msg)
 
 void LevelEditor::createMaterial(char * msg)
 {
-    char * name = (msg + sizeof(Transformation));
+
+	//MaterialParameter * materialParameter; // <-- defuq is dis, figure out pls. pls.
+
+	
+
+
+	//create and add material to specified mesh/model.
+	//if there's a texture then set it and specify relevant shaders.
+	//if there isn't, then use given color values and precify relevant shaders.
+
+    char * name = (msg + sizeof(unsigned int)*2);
     unsigned int * kuk = (unsigned int*)msg;
     name[*(unsigned int*)msg] = '\0';
-    Node * node;
+    Node * node = Node::create(name);
+
+	Material * material;
+
+	msg += (*msg * sizeof(unsigned int)) + (sizeof(unsigned int) * 2);
+
+	//TODO: add counter for amount of different lighttypes and insert into shader assignment string as a char 
+	if (*(kuk) <= 0) //no texture
+		material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
+	else //texture
+	{
+		material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "POINT_LIGHT_COUNT 1");
+		//need some way of keeping track of the texture.
+		Texture * texture = Texture::create(msg, true);
+	}
+
+	RenderState::StateBlock* block = RenderState::StateBlock::create();
+	block->setCullFace(true);
+	block->setDepthTest(true);
+	material->setStateBlock(block);
+	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
+	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
+	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+
+	Node* lightNode = _scene->findNode("pointLightShape1");
+	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
+	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
+	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+
+	material->getParameter("u_diffuseColor")->setValue(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+	material->getParameter("u_ambientColor")->setValue(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+	//need some way of finding out what model needs new material
+	//now it just applies it to te node with the same name, this is - very - wrongbajs
+	static_cast<Model*>(node->getDrawable())->setMaterial(material);
+
+
 }
 
 void LevelEditor::createTexture(char * msg)
 {
-    char * name = (msg + sizeof(Transformation));
+	//Adds a new texture to a material, if said material allready has a texture. Then replace it.
+
+    char * name = (msg + sizeof(unsigned int)*3);
     unsigned int * kuk = (unsigned int*)msg;
     name[*(unsigned int*)msg] = '\0';
-    Node * node;
 
-    //Texture * tex = Texture::create
+	Node * node = _scene->findNode(name);
+
+	
+   // Texture * tex = Texture::create()
 
 
 }
