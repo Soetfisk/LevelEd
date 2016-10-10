@@ -48,17 +48,17 @@ void LevelEditor::initialize()
 #pragma region TESTS
 	
 
-	Camera * Camera = Camera::createPerspective(45.0,
-		getAspectRatio(), 1.0f, 100.0f);
+	//Camera * Camera = Camera::createPerspective(45.0,
+	//	getAspectRatio(), 1.0f, 100.0f);
 
-	Node * cameraNode = _scene->addNode("persp");
-	cameraNode->setCamera(Camera);
-	_scene->setActiveCamera(Camera);
+	//Node * cameraNode = _scene->addNode("persp");
+	//cameraNode->setCamera(Camera);
+	//_scene->setActiveCamera(Camera);
 
-	SAFE_RELEASE(Camera);
+	//SAFE_RELEASE(Camera);
 
-	cameraNode->translate(0, 1, 5);
-	cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
+	//cameraNode->translate(0, 1, 5);
+	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
 
 	
@@ -448,14 +448,14 @@ void LevelEditor::createCamera(char * msg)
 	name[*(unsigned int*)msg + 1] = '\0';
 	Node * node;
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode(name); //just checking the first place in the char pointer
+	node = _scene->findNode("persp"); //just checking the first place in the char pointer
 
 	Camera * camera;
 
 	if (!node)
 	{
-		node = _scene->addNode(msg + sizeof(unsigned int));
-		camera = Camera::createPerspective(45.0,
+		node = _scene->addNode("persp");
+		camera = Camera::createPerspective(45.0,	
 			getAspectRatio(), 1.0f, 100.0f);
 		node->setCamera(camera);
 	}
@@ -552,7 +552,7 @@ void LevelEditor::modifyTransform(char * msg)
 	unsigned int * kuk = (unsigned int*)msg;
 	name[*(unsigned int*)msg] = '\0';
 	Node * node;
-	node = _scene->findNode(name); //just checking the first place in the char pointer
+	node = _scene->findNode("persp"); //just checking the first place in the char pointer
 	//msg += sizeof(unsigned int);
 
     if (node)
@@ -574,15 +574,6 @@ void LevelEditor::modifyTransform(char * msg)
             break;
         case MayaReader::ALL:
         {
-            bool derp = node->isStatic();
-            static unsigned int cameraMsgCount = 0;
-            
-            if (strcmp(name, "persp") == 0)
-            {
-                cameraMsgCount++;
-                printf("%d", cameraMsgCount);
-            }
-
 
             node->setScale((float*)msg);
             node->setRotation(Quaternion(&((float*)msg)[3]));
