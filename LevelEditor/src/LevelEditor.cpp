@@ -277,7 +277,7 @@ void LevelEditor::createTestMesh(char* msg)
 
 	CreateMesh* mMesh;
 	Vertex *mVertex;
-	Index *mIndex, *mNormalIndex;
+	Index *mIndex, *mNormalIndex, *offsetIndices;
 	Normals *mNormal;
     unsigned int * indexList;
 
@@ -304,6 +304,9 @@ void LevelEditor::createTestMesh(char* msg)
 	msg += sizeof(Normals)*mMesh->normalCount;
 	mNormalIndex = (Index*)(msg);
 
+	msg += sizeof(Index)*mMesh->normalIndexCount;
+	offsetIndices = (Index*)(msg);
+
 	msg += sizeof(Index)*mMesh->indexCount;
 
 	indexList = new unsigned int[mMesh->indexCount];
@@ -314,9 +317,9 @@ void LevelEditor::createTestMesh(char* msg)
 		vData[i].x = mVertex[mIndex[i].nr].x;
 		vData[i].y = mVertex[mIndex[i].nr].y;
 		vData[i].z = mVertex[mIndex[i].nr].z;
-		vData[i].nx = mNormal[mNormalIndex[i].nr].x;
-		vData[i].ny	= mNormal[mNormalIndex[i].nr].y;
-		vData[i].nz	= mNormal[mNormalIndex[i].nr].z;
+		vData[i].nx = mNormal[mNormalIndex[offsetIndices[i].nr].nr].x;
+		vData[i].ny	= mNormal[mNormalIndex[offsetIndices[i].nr].nr].y;
+		vData[i].nz	= mNormal[mNormalIndex[offsetIndices[i].nr].nr].z;
 
 		vData[i].r = 150.f;
 		vData[i].g = 150.f;
