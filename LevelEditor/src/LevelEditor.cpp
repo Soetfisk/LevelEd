@@ -547,50 +547,112 @@ void LevelEditor::createTexture(char * msg)
 
 void LevelEditor::modifyTransform(char * msg)
 {
+	Transformation * info = (Transformation*)msg;
+	char * movementInfo = (msg + sizeof(Transformation));
 
-	char * name = (msg + sizeof(Transformation));
-	unsigned int * kuk = (unsigned int*)msg;
-	name[*(unsigned int*)msg] = '\0';
-	Node * node;
-	node = _scene->findNode(name); //just checking the first place in the char pointer
-	//msg += sizeof(unsigned int);
+	char * pek = msg + sizeof(Transformation);
+	if (info->modified == 1)
+		pek += sizeof(float*) * 4;
+	else if (info->modified == 3)
+		pek += sizeof(float*) * 10;
+	else
+		pek += sizeof(float*) * 3;
 
-    if (node)
-    {
-
-        msg += sizeof(unsigned int);
-        unsigned int Case = (*(unsigned int*)msg);
-
-        msg += *kuk + sizeof(unsigned int);
+	for (int i = 0; i < info->nrOfMeshes; ++i)
+	{
+		//char * pek = msg;
 
 
-        switch (Case)
-        {
-        case MayaReader::SCALE:
-			node->setScale((float*)msg);
-            break;
-        case MayaReader::ROTATION:
-			node->setRotation(Quaternion((float*)msg));
-            break;
-        case MayaReader::TRANSLATION:
-			node->setTranslation((float*)msg);
-            break;
-        case MayaReader::ALL:
-        {
+		char * name = (pek + sizeof(unsigned int));
+		unsigned int * nameLength = (unsigned int*)(pek);
+		name[*nameLength] = '\0';
+		Node * node;
+		node = _scene->findNode(name); //just checking the first place in the char pointer
+									   //msg += sizeof(unsigned int);
 
-            node->setScale((float*)msg);
-            node->setRotation(Quaternion(&((float*)msg)[3]));
-            node->setTranslation((&((float*)msg)[7]));
+		pek += sizeof(unsigned int);
+		pek += *nameLength;
 
-            //node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
-            break;
-        }
+		if (node)
+		{
 
-        default:
-            break; //självmord
-        }
+			unsigned int Case = info->modified;
 
-    }
+			//pek += sizeof(unsigned int);
+			//pek += *nameLength + sizeof(unsigned int);
+
+
+			switch (Case)
+			{
+			case MayaReader::SCALE:
+				node->setScale((float*)movementInfo);
+				break;
+			case MayaReader::ROTATION:
+				node->setRotation(Quaternion((float*)movementInfo));
+				break;
+			case MayaReader::TRANSLATION:
+				node->setTranslation((float*)movementInfo);
+				break;
+			case MayaReader::ALL:
+			{
+
+				node->setScale((float*)movementInfo);
+				node->setRotation(Quaternion(&((float*)movementInfo)[3]));
+				node->setTranslation((&((float*)movementInfo)[7]));
+
+				//node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
+				break;
+			}
+
+			default:
+				break; //självmord
+			}
+
+		}
+	}
+	//char * name = (msg + sizeof(Transformation));
+	//unsigned int * kuk = (unsigned int*)msg;
+	//name[*(unsigned int*)msg] = '\0';
+	//Node * node;
+	//node = _scene->findNode(name); //just checking the first place in the char pointer
+	////msg += sizeof(unsigned int);
+
+ //   if (node)
+ //   {
+
+ //       msg += sizeof(unsigned int);
+ //       unsigned int Case = (*(unsigned int*)msg);
+
+ //       msg += *kuk + sizeof(unsigned int);
+
+
+ //       switch (Case)
+ //       {
+ //       case MayaReader::SCALE:
+	//		node->setScale((float*)msg);
+ //           break;
+ //       case MayaReader::ROTATION:
+	//		node->setRotation(Quaternion((float*)msg));
+ //           break;
+ //       case MayaReader::TRANSLATION:
+	//		node->setTranslation((float*)msg);
+ //           break;
+ //       case MayaReader::ALL:
+ //       {
+
+ //           node->setScale((float*)msg);
+ //           node->setRotation(Quaternion(&((float*)msg)[3]));
+ //           node->setTranslation((&((float*)msg)[7]));
+
+ //           //node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
+ //           break;
+ //       }
+
+ //       default:
+ //           break; //självmord
+ //       }
+
+ //   }
 	//float * translate;
 	//float * scale;
 	//float * rotationQuat;

@@ -23,7 +23,7 @@
 	};
 	struct Transformation
 	{
-		unsigned int nameLength;
+		unsigned int nrOfMeshes;
 		unsigned int modified;
 	};
 	struct Vertex
