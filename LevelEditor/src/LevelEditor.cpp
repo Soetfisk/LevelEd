@@ -552,7 +552,7 @@ void LevelEditor::modifyTransform(char * msg)
 	unsigned int * kuk = (unsigned int*)msg;
 	name[*(unsigned int*)msg] = '\0';
 	Node * node;
-	node = _scene->findNode("persp"); //just checking the first place in the char pointer
+	node = _scene->findNode(name); //just checking the first place in the char pointer
 	//msg += sizeof(unsigned int);
 
     if (node)
@@ -567,10 +567,13 @@ void LevelEditor::modifyTransform(char * msg)
         switch (Case)
         {
         case MayaReader::SCALE:
+			node->setScale((float*)msg);
             break;
         case MayaReader::ROTATION:
+			node->setRotation(Quaternion((float*)msg));
             break;
         case MayaReader::TRANSLATION:
+			node->setTranslation((float*)msg);
             break;
         case MayaReader::ALL:
         {

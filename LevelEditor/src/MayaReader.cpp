@@ -4,7 +4,7 @@
 
 MayaReader::MayaReader() 
 {
-	circularBuffer = new CircularBuffer(L"poop3", 100, false, 256);
+	circularBuffer = new CircularBuffer(L"poop3", 200, false, 256);
 }
 MayaReader::~MayaReader() 
 {
@@ -14,7 +14,7 @@ MayaReader::~MayaReader()
 
 MayaReader::MsgContain MayaReader::handleData(char *& Node) //reference to pointer in order to change the adress
 {
-	msg = new char[(100 * 1 << 10) / 4];
+	msg = new char[(200 * 1 << 10) / 4];
 
 	if (circularBuffer->pop(msg, length))
 	{
