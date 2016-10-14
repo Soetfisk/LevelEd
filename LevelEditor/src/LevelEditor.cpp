@@ -572,26 +572,32 @@ void LevelEditor::modifyVertex(char * msg)
 		Index * indexList = (Index*)msg;
 
 		msg += sizeof(Index)*vertexInfo->indexLength;
-		Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
-		
-		vData.r = 150;
-		vData.g = 150;
-		vData.b = 150;
 
-		vData.x = translation->x;
-		vData.y = translation->y;
-		vData.z = translation->z;
-
-		vData.nx = 0;
-		vData.ny = 1;
-		vData.nz = 0;
-		
-		for (int i = 0; i < vertexInfo->indexLength; ++i)
+		for (int j = 0; j < vertexInfo->nrOfVertices; ++j)
 		{
-			if (*(unsigned int*)msg == indexList[i].nr)
+			unsigned int * balle = (unsigned int *)msg;
+			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
+
+			vData.r = 150;
+			vData.g = 150;
+			vData.b = 150;
+
+			vData.x = translation->x;
+			vData.y = translation->y;
+			vData.z = translation->z;
+
+			vData.nx = 0;
+			vData.ny = 1;
+			vData.nz = 0;
+
+			for (int i = 0; i < vertexInfo->indexLength; ++i)
 			{
-				static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
+				if (*(unsigned int*)msg == indexList[i].nr)
+				{
+					static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
+				}
 			}
+			msg += sizeof(unsigned int) + sizeof(Vertex);
 		}
 	}
 }

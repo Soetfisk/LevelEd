@@ -29,8 +29,13 @@
 	struct modVertInfo
 	{
 		unsigned int nameLength;
-		//unsigned int nrOfVertices;
+		unsigned int nrOfVertices;
 		unsigned int indexLength;
+	};
+	struct vertexWID
+	{
+		unsigned int id;
+		float x, y, z;
 	};
 	struct Vertex
 	{
