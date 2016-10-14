@@ -547,112 +547,115 @@ void LevelEditor::createTexture(char * msg)
 
 void LevelEditor::modifyTransform(char * msg)
 {
-	Transformation * info = (Transformation*)msg;
-	char * movementInfo = (msg + sizeof(Transformation));
-
-	char * pek = msg + sizeof(Transformation);
-	if (info->modified == 1)
-		pek += sizeof(float*) * 4;
-	else if (info->modified == 3)
-		pek += sizeof(float*) * 10;
-	else
-		pek += sizeof(float*) * 3;
-
-	for (int i = 0; i < info->nrOfMeshes; ++i)
+	char * name = (msg + sizeof(Transformation));
+	unsigned int * kuk = (unsigned int*)msg;
+	name[*(unsigned int*)msg] = '\0';
+	Node * node;
+	//if (((unsigned int)(msg + sizeof(unsigned int)) == 3))
+		//node = _scene->findNode("persp");
+	//else
+	node = _scene->findNode(name); //just checking the first place in the char pointer
+								   //msg += sizeof(unsigned int);
+	if (node)
 	{
-		//char * pek = msg;
+
+		msg += sizeof(unsigned int);
+		unsigned int Case = (*(unsigned int*)msg);
+
+		msg += *kuk + sizeof(unsigned int);
 
 
-		char * name = (pek + sizeof(unsigned int));
-		unsigned int * nameLength = (unsigned int*)(pek);
-		name[*nameLength] = '\0';
-		Node * node;
-		node = _scene->findNode(name); //just checking the first place in the char pointer
-									   //msg += sizeof(unsigned int);
-
-		pek += sizeof(unsigned int);
-		pek += *nameLength;
-
-		if (node)
+		switch (Case)
+		{
+		case MayaReader::SCALE:
+			node->setScale((float*)msg);
+			break;
+		case MayaReader::ROTATION:
+			node->setRotation(Quaternion((float*)msg));
+			break;
+		case MayaReader::TRANSLATION:
+			node->setTranslation((float*)msg);
+			break;
+		case MayaReader::ALL:
 		{
 
-			unsigned int Case = info->modified;
+			node->setScale((float*)msg);
+			node->setRotation(Quaternion(&((float*)msg)[3]));
+			node->setTranslation((&((float*)msg)[7]));
 
-			//pek += sizeof(unsigned int);
-			//pek += *nameLength + sizeof(unsigned int);
-
-
-			switch (Case)
-			{
-			case MayaReader::SCALE:
-				node->setScale((float*)movementInfo);
-				break;
-			case MayaReader::ROTATION:
-				node->setRotation(Quaternion((float*)movementInfo));
-				break;
-			case MayaReader::TRANSLATION:
-				node->setTranslation((float*)movementInfo);
-				break;
-			case MayaReader::ALL:
-			{
-
-				node->setScale((float*)movementInfo);
-				node->setRotation(Quaternion(&((float*)movementInfo)[3]));
-				node->setTranslation((&((float*)movementInfo)[7]));
-
-				//node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
-				break;
-			}
-
-			default:
-				break; //självmord
-			}
-
+			//node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
+			break;
 		}
+
+		default:
+			break; //självmord
+		}
+
 	}
-	//char * name = (msg + sizeof(Transformation));
-	//unsigned int * kuk = (unsigned int*)msg;
-	//name[*(unsigned int*)msg] = '\0';
-	//Node * node;
-	//node = _scene->findNode(name); //just checking the first place in the char pointer
-	////msg += sizeof(unsigned int);
+	//Transformation * info = (Transformation*)msg;
+	//char * movementInfo = (msg + sizeof(Transformation));
 
- //   if (node)
- //   {
+	//char * pek = msg + sizeof(Transformation);
+	//if (info->modified == 1)
+	//	pek += sizeof(float*) * 4;
+	//else if (info->modified == 3)
+	//	pek += sizeof(float*) * 10;
+	//else
+	//	pek += sizeof(float*) * 3;
 
- //       msg += sizeof(unsigned int);
- //       unsigned int Case = (*(unsigned int*)msg);
+	//for (int i = 0; i < info->nrOfMeshes; ++i)
+	//{
+	//	//char * pek = msg;
 
- //       msg += *kuk + sizeof(unsigned int);
+
+	//	char * name = (pek + sizeof(unsigned int));
+	//	unsigned int * nameLength = (unsigned int*)(pek);
+	//	name[*nameLength] = '\0';
+	//	Node * node;
+	//	node = _scene->findNode(name); //just checking the first place in the char pointer
+	//								   //msg += sizeof(unsigned int);
+
+	//	pek += sizeof(unsigned int);
+	//	pek += *nameLength;
+
+	//	if (node)
+	//	{
+
+	//		unsigned int Case = info->modified;
+
+	//		//pek += sizeof(unsigned int);
+	//		//pek += *nameLength + sizeof(unsigned int);
 
 
- //       switch (Case)
- //       {
- //       case MayaReader::SCALE:
-	//		node->setScale((float*)msg);
- //           break;
- //       case MayaReader::ROTATION:
-	//		node->setRotation(Quaternion((float*)msg));
- //           break;
- //       case MayaReader::TRANSLATION:
-	//		node->setTranslation((float*)msg);
- //           break;
- //       case MayaReader::ALL:
- //       {
+	//		switch (Case)
+	//		{
+	//		case MayaReader::SCALE:
+	//			node->setScale((float*)movementInfo);
+	//			break;
+	//		case MayaReader::ROTATION:
+	//			node->setRotation(Quaternion((float*)movementInfo));
+	//			break;
+	//		case MayaReader::TRANSLATION:
+	//			node->setTranslation((float*)movementInfo);
+	//			break;
+	//		case MayaReader::ALL:
+	//		{
 
- //           node->setScale((float*)msg);
- //           node->setRotation(Quaternion(&((float*)msg)[3]));
- //           node->setTranslation((&((float*)msg)[7]));
+	//			node->setScale((float*)movementInfo);
+	//			node->setRotation(Quaternion(&((float*)movementInfo)[3]));
+	//			node->setTranslation((&((float*)movementInfo)[7]));
 
- //           //node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
- //           break;
- //       }
+	//			//node->set(((float*)msg), Quaternion(&((float*)msg)[3]), (&((float*)msg)[7])); //set translation values
+	//			break;
+	//		}
 
- //       default:
- //           break; //självmord
- //       }
+	//		default:
+	//			break; //självmord
+	//		}
 
- //   }
+	//	}
+
+	
 	//float * translate;
 	//float * scale;
 	//float * rotationQuat;
