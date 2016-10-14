@@ -126,6 +126,10 @@ void LevelEditor::update(float elapsedTime)
 
 
 		case MayaReader::VERTEX_CHANGE:
+		{
+			modifyVertex(msg);
+			break;
+		}
 		case MayaReader::CAMERA_CHANGE:
         case MayaReader::TEXTURE_CHANGE:
 		case MayaReader::MATERAL_CHANGE:
@@ -543,6 +547,49 @@ void LevelEditor::createTexture(char * msg)
    // Texture * tex = Texture::create()
 
 
+}
+
+void LevelEditor::modifyVertex(char * msg)
+{
+	char * name = (msg + sizeof(modVertInfo));
+	unsigned int * nLength = (unsigned int*)msg;
+	name[*nLength] = '\0';
+	Node * node;
+
+	node = _scene->findNode(name);
+	if (node)
+	{
+		vertexData vData;
+		modVertInfo * vertexInfo = (modVertInfo*)msg;
+
+		msg += sizeof(modVertInfo);
+		msg += vertexInfo->nameLength;
+
+		Index * indexList = (Index*)msg;
+
+		msg += sizeof(Index)*vertexInfo->indexLength;
+		Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
+		
+		vData.r = 150;
+		vData.g = 150;
+		vData.b = 150;
+
+		vData.x = translation->x;
+		vData.y = translation->y;
+		vData.z = translation->z;
+
+		vData.nx = 0;
+		vData.ny = 1;
+		vData.nz = 0;
+		
+		for (int i = 0; i < vertexInfo->indexLength; ++i)
+		{
+			if (*(unsigned int*)msg == indexList[i].nr)
+			{
+				static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
+			}
+		}
+	}
 }
 
 void LevelEditor::modifyTransform(char * msg)

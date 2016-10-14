@@ -54,7 +54,7 @@ protected:
 	void createCamera(char * msg);
     void createMaterial(char* msg);
     void createTexture(char * msg);
-
+	void modifyVertex(char * msg);
 
 	/**
 	* @see Game::initialize

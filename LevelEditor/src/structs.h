@@ -26,6 +26,12 @@
 		unsigned int nrOfMeshes;
 		unsigned int modified;
 	};
+	struct modVertInfo
+	{
+		unsigned int nameLength;
+		//unsigned int nrOfVertices;
+		unsigned int indexLength;
+	};
 	struct Vertex
 	{
 		float x, y, z;
