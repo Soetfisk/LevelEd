@@ -55,6 +55,7 @@ protected:
     void createMaterial(char* msg);
     void createTexture(char * msg);
 	void modifyVertex(char * msg);
+	void deleteElement(char * msg);
 
 	/**
 	* @see Game::initialize

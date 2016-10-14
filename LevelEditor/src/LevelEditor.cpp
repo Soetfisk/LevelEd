@@ -134,6 +134,10 @@ void LevelEditor::update(float elapsedTime)
         case MayaReader::TEXTURE_CHANGE:
 		case MayaReader::MATERAL_CHANGE:
         case MayaReader::DELETED:
+		{
+			deleteElement(msg);
+			break;
+		}
 
 		default:
 			break;
@@ -589,6 +593,20 @@ void LevelEditor::modifyVertex(char * msg)
 				static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
 			}
 		}
+	}
+}
+
+void LevelEditor::deleteElement(char * msg)
+{
+	char * name = (msg + sizeof(unsigned int));
+	//unsigned int * nLength = (unsigned int*)msg;
+	name[*(unsigned int*)msg] = '\0';
+	Node * node;
+
+	node = _scene->findNode(name);
+	if (node)
+	{
+		_scene->removeNode(node);
 	}
 }
 
