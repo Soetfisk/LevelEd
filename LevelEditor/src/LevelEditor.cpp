@@ -122,9 +122,6 @@ void LevelEditor::update(float elapsedTime)
 			modifyTransform(msg);
 			break;
 		}
-
-
-
 		case MayaReader::VERTEX_CHANGE:
 		{
 			modifyVertex(msg);
@@ -263,8 +260,6 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 void LevelEditor::createTestMesh(char* msg)
 {
  
-   
-
 	char * name = (msg + sizeof(CreateMesh));
 	name[*(unsigned int*)msg] = '\0';
 
@@ -283,9 +278,11 @@ void LevelEditor::createTestMesh(char* msg)
 	//msg += (*(unsigned int*)msg + sizeof(unsigned int));
 	//msg += (*(unsigned int*)msg + sizeof(CreateMesh));
 
+	char * materialName;
 	CreateMesh* mMesh;
 	Vertex *mVertex;
-	Index *mIndex, *mNormalIndex, *offsetIndices;
+	Index *mIndex, *mNormalIndex, *offsetIndices, *uvIndex;
+	float *u, *v;
 	Normals *mNormal;
     unsigned int * indexList;
 
@@ -302,20 +299,32 @@ void LevelEditor::createTestMesh(char* msg)
 
 	//msg += sizeof(CreateMesh);
 	mVertex = (Vertex*)(msg);
-
 	msg += sizeof(Vertex)*mMesh->vertexCount;
+	
 	mIndex = (Index*)(msg);
-
 	msg += sizeof(Index)*mMesh->indexCount;
+
 	mNormal = (Normals*)(msg);
-
 	msg += sizeof(Normals)*mMesh->normalCount;
+	
 	mNormalIndex = (Index*)(msg);
-
 	msg += sizeof(Index)*mMesh->normalIndexCount;
+	
 	offsetIndices = (Index*)(msg);
-
 	msg += sizeof(Index)*mMesh->indexCount;
+
+	//skip uvs for now
+	u = (float*)msg;
+	msg += sizeof(float) * mMesh->uvCount;
+
+	v = (float*)msg;
+	msg += sizeof(float) * mMesh->uvCount;
+
+	uvIndex = (Index*)msg;
+	msg += sizeof(Index)*mMesh->uvIndexCount;
+
+	materialName = msg;
+	materialName[mMesh->materialNameLength] = '\0';
 
 	indexList = new unsigned int[mMesh->indexCount];
 
@@ -489,24 +498,64 @@ void LevelEditor::createMaterial(char * msg)
 
 	//MaterialParameter * materialParameter; // <-- defuq is dis, figure out pls. pls.
 
-	
-
-
+	ambient amb;
+	diffuse diff;
+	specular spec;
+	char *ambPath, *texPath, *normalPath, *specPath;
 	//create and add material to specified mesh/model.
 	//if there's a texture then set it and specify relevant shaders.
 	//if there isn't, then use given color values and precify relevant shaders.
+	CreateMaterial hMaterial = *(CreateMaterial*)msg;
+	msg += sizeof(CreateMaterial);
 
-    char * name = (msg + sizeof(unsigned int)*2);
-    unsigned int * kuk = (unsigned int*)msg;
-    name[*(unsigned int*)msg] = '\0';
-    Node * node = Node::create(name);
+    char * name = msg;
+    name[hMaterial.nameLength] = '\0';
+	msg += hMaterial.nameLength;
+
+	if (hMaterial.texturePathLength > 0)
+	{
+		texPath = msg;
+		msg += hMaterial.texturePathLength;
+	}
+	if (hMaterial.normalPathLength > 0)
+	{
+		normalPath = msg;
+		msg += hMaterial.normalPathLength;
+	}
+
+	if (hMaterial.ambientPathLength > 0)
+	{
+		ambPath = msg;
+		msg += hMaterial.ambientPathLength;
+	}
+
+	if (hMaterial.specularPathlength > 0 && hMaterial.specular)
+	{
+		specPath = msg;
+		msg += hMaterial.specularPathlength;
+	}
+
+	amb = *(ambient*)msg;
+	msg += sizeof(ambient);
+
+	diff = *(diffuse*)msg;
+	msg += sizeof(diffuse);
+
+	if (hMaterial.specular)
+	{
+		spec = *(specular*)msg;
+		msg += sizeof(specular);
+	}
+
+	Node * node = _scene->findNode(name);
+    if (!node) 
+		node = Node::create(name);
+
 
 	Material * material;
 
-	msg += (*msg * sizeof(unsigned int)) + (sizeof(unsigned int) * 2);
-
 	//TODO: add counter for amount of different lighttypes and insert into shader assignment string as a char 
-	if (*(kuk) <= 0) //no texture
+	if (hMaterial.texturePathLength <= 0) //no texture
 		material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
 	else //texture
 	{

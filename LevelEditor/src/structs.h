@@ -20,6 +20,7 @@
 		that make up the name. So put a null byte at nameLength+1*/
 		unsigned int uvCount;
 		unsigned int uvIndexCount;
+		unsigned int materialNameLength;
 	};
 	struct Transformation
 	{
@@ -49,6 +50,14 @@
 	{
 		float x, y, z;
 	};
+	struct U
+	{
+		float u;
+	};
+	struct V
+	{
+		float v;
+	};
 	struct vertexData
 	{
 		float x, y, z;
@@ -64,4 +73,26 @@
 	struct floatMatrix
 	{
 		float m[16];
+	};
+
+	struct CreateMaterial
+	{
+		unsigned int texturePathLength;
+		unsigned int normalPathLength;
+		unsigned int ambientPathLength;
+		unsigned int specularPathlength;
+		unsigned int nameLength;
+		bool specular;
+	};
+	struct ambient
+	{
+		float r, g, b;
+	};
+	struct diffuse
+	{
+		float r, g, b, coeff;
+	};
+	struct specular
+	{
+		float r, g, b, shine;
 	};
