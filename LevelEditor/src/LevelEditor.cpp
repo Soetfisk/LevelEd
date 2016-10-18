@@ -386,26 +386,26 @@ void LevelEditor::createTestMesh(char* msg)
 #pragma region creatingggggg
 
 
-	
+
 	//Material * material = Material::create("res/demo.material");
-	Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
+	//Material * material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
 
-	RenderState::StateBlock* block = RenderState::StateBlock::create();
-	block->setCullFace(true);
-	block->setDepthTest(true);
-	material->setStateBlock(block);
-	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
-	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
-	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
+	//RenderState::StateBlock* block = RenderState::StateBlock::create();
+	//block->setCullFace(true);
+	//block->setDepthTest(true);
+	//material->setStateBlock(block);
+	//material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
+	//material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
+	//material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
 
-	Node* lightNode = _scene->findNode("pointLightShape1");
-	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
-	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
-	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+	//Node* lightNode = _scene->findNode("pointLightShape1");
+	//material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
+	//material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
+	//material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
 
 
-	material->getParameter("u_diffuseColor")->setValue(Vector4(0.9f, 0.9f, 0.9f, 1.0f));
-	material->getParameter("u_ambientColor")->setValue(Vector3(0.5f, 0.5f, 0.5f));
+	//material->getParameter("u_diffuseColor")->setValue(Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+	//material->getParameter("u_ambientColor")->setValue(Vector3(0.5f, 0.5f, 0.5f));
 
 	VertexFormat::Element elements[] =
 	{
@@ -444,12 +444,12 @@ void LevelEditor::createTestMesh(char* msg)
 	Model * model = Model::create(mesh);
 
 	
+	Material * material = materialMap[materialName];
 
 	if (material)
 		model->setMaterial(material);
 
 	node->setDrawable(model);
-	node->translateZ(3.0f);
 
 	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
 
@@ -510,30 +510,36 @@ void LevelEditor::createMaterial(char * msg)
 
     char * name = msg;
     name[hMaterial.nameLength] = '\0';
-	msg += hMaterial.nameLength;
+	msg += hMaterial.nameLength + 1;
 
 	if (hMaterial.texturePathLength > 0)
 	{
 		texPath = msg;
 		msg += hMaterial.texturePathLength;
+		texPath[hMaterial.texturePathLength] = '\0';
 	}
+	msg += 1;
 	if (hMaterial.normalPathLength > 0)
 	{
 		normalPath = msg;
 		msg += hMaterial.normalPathLength;
+		normalPath[hMaterial.normalPathLength] = '\0';
 	}
-
+	msg += 1;
 	if (hMaterial.ambientPathLength > 0)
 	{
 		ambPath = msg;
 		msg += hMaterial.ambientPathLength;
+		ambPath[hMaterial.ambientPathLength] = '\0';
 	}
-
+	msg += 1;
 	if (hMaterial.specularPathlength > 0 && hMaterial.specular)
 	{
 		specPath = msg;
 		msg += hMaterial.specularPathlength;
+		specPath[hMaterial.specularPathlength] = '\0';
 	}
+	msg += 1;
 
 	amb = *(ambient*)msg;
 	msg += sizeof(ambient);
@@ -551,38 +557,45 @@ void LevelEditor::createMaterial(char * msg)
     if (!node) 
 		node = Node::create(name);
 
+	Vector4 derp = (Vector4)(float*)&diff;
 
 	Material * material;
-
-	//TODO: add counter for amount of different lighttypes and insert into shader assignment string as a char 
 	if (hMaterial.texturePathLength <= 0) //no texture
+	{
 		material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
-	else //texture
+		material->getParameter("u_diffuseColor")->setValue((Vector4)(float*)&diff);
+	}
+	else //texture DO DIS SOEMTEIM PLS
 	{
 		material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "POINT_LIGHT_COUNT 1");
 		//need some way of keeping track of the texture.
-		Texture * texture = Texture::create(msg, true);
+		//Texture * texture = Texture::create(texPath, true);
+		material->getParameter("u_diffuseTexture")->setValue(texPath, true);
 	}
+		material->getParameter("u_ambientColor")->setValue((float*)&amb);
 
 	RenderState::StateBlock* block = RenderState::StateBlock::create();
 	block->setCullFace(true);
 	block->setDepthTest(true);
 	material->setStateBlock(block);
+
 	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
 	material->setParameterAutoBinding("u_worldViewProjectionMatrix", RenderState::AutoBinding::WORLD_VIEW_PROJECTION_MATRIX);
 	material->setParameterAutoBinding("u_inverseTransposeWorldViewMatrix", RenderState::AutoBinding::INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX);
 
-	Node* lightNode = _scene->findNode("pointLightShape1");
+	Node* lightNode = _scene->findNode("pointLightShape1");//TODO: add counter for amount of different lighttypes and insert into shader assignment string as a char 
 	material->getParameter("u_pointLightColor[0]")->bindValue(lightNode->getLight(), &Light::getColor);
 	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
 	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
 
-	material->getParameter("u_diffuseColor")->setValue(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-	material->getParameter("u_ambientColor")->setValue(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-	//need some way of finding out what model needs new material
-	//now it just applies it to te node with the same name, this is - very - wrongbajs
-	static_cast<Model*>(node->getDrawable())->setMaterial(material);
+	
+	
 
+	materialMap[name] = material;
+
+	//Material * derp = materialMap[name];
+
+	//static_cast<Model*>(node->getDrawable())->setMaterial(material);
 
 }
 

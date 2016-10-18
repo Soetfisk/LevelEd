@@ -4,6 +4,7 @@
 #include "MayaReader.h"
 #include "gameplay.h"
 #include "DataTypes.h"
+#include <string>
 
 using namespace gameplay;
 
@@ -13,8 +14,30 @@ using namespace gameplay;
 class LevelEditor : public Game
 {
 private:
+#pragma region MAPSHIT
+	//struct cmp_str : public std::binary_function<const char*, const char*, bool> 
+	//{
+	//	bool operator()(const char *a, const char *b)
+	//	{
+	//		return std::strcmp(a, b) < 0;
+	//	}
+	//};
+
+	//struct mat_cmp
+	//{
+	//	bool operator()(const Material*a, const Material *b)
+	//	{
+	//		return(a == b);
+	//	}
+	//};
+
 	MayaReader * mayaReader;
-	
+	std::unordered_map<std::string, Material*> materialMap;
+	//typedef std::unordered_map<Material*, Texture*, mat_cmp> textureMap;
+	//materialMap mMap;
+	//textureMap tMap;
+#pragma endregion
+
 	/**
 	* Draws the scene each frame.
 	*/
