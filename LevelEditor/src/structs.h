@@ -21,6 +21,11 @@
 		unsigned int uvCount;
 		unsigned int uvIndexCount;
 	};
+	struct nameChanged
+	{
+		unsigned int nameLength;
+		unsigned int newNameLength;
+	};
 	struct Transformation
 	{
 		unsigned int nrOfMeshes;

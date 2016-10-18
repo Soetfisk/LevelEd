@@ -133,6 +133,11 @@ void LevelEditor::update(float elapsedTime)
 		case MayaReader::CAMERA_CHANGE:
         case MayaReader::TEXTURE_CHANGE:
 		case MayaReader::MATERAL_CHANGE:
+		case MayaReader::NAME_CHANGE:
+		{
+			nameChange(msg);
+			break;
+		}
         case MayaReader::DELETED:
 		{
 			deleteElement(msg);
@@ -262,7 +267,8 @@ void LevelEditor::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int c
 
 void LevelEditor::createTestMesh(char* msg)
 {
- 
+ /*kanske göra msg[buffsize],
+ läs in * meddelanden i buffern, sen skicka dem hit*/
    
 
 	char * name = (msg + sizeof(CreateMesh));
@@ -440,7 +446,7 @@ void LevelEditor::createTestMesh(char* msg)
 		model->setMaterial(material);
 
 	node->setDrawable(model);
-	node->translateZ(3.0f);
+	//node->translateZ(3.0f);
 
 	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
 
@@ -586,6 +592,9 @@ void LevelEditor::modifyVertex(char * msg)
 			vData.y = translation->y;
 			vData.z = translation->z;
 
+			//VertexBufferHandle kuk = static_cast<Model*>(node->getDrawable())->getMesh()->getVertexBuffer();
+			//vertexData * knulla = (vertexData*)bajs;
+
 			vData.nx = 0;
 			vData.ny = 1;
 			vData.nz = 0;
@@ -613,6 +622,26 @@ void LevelEditor::deleteElement(char * msg)
 	if (node)
 	{
 		_scene->removeNode(node);
+	}
+}
+
+void LevelEditor::nameChange(char * msg)
+{
+	char * name = (msg + sizeof(nameChanged));
+	name[*(unsigned int*)msg] = '\0';
+	Node * node;
+
+	node = _scene->findNode(name);
+	if (node)
+	{
+		nameChanged * nInfo = (nameChanged *)msg;
+		msg += sizeof(nameChanged);
+		msg += nInfo->nameLength+1;
+
+		char * newName = msg;
+		newName[nInfo->newNameLength] = '\0';
+
+		node->setId(newName);
 	}
 }
 
@@ -679,7 +708,6 @@ void LevelEditor::modifyTransform(char * msg)
 	{
 		//char * pek = msg;
 
-		//GLÖM INTE ATT FIXA KAMERAN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		char * name = (pek + sizeof(unsigned int));
 		unsigned int * nameLength = (unsigned int*)(pek);
