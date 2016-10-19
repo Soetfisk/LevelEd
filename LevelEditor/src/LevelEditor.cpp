@@ -282,7 +282,7 @@ void LevelEditor::createTestMesh(char* msg)
 	CreateMesh* mMesh;
 	Vertex *mVertex;
 	Index *mIndex, *mNormalIndex, *offsetIndices, *uvIndex;
-	float *u, *v;
+	float *mU, *mV;
 	Normals *mNormal;
     unsigned int * indexList;
 
@@ -296,6 +296,8 @@ void LevelEditor::createTestMesh(char* msg)
 	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
 	mVertex = new Vertex[mMesh->vertexCount];
 	mIndex = new Index[mMesh->indexCount];
+	mU = new float[mMesh->uvCount];
+	mV = new float[mMesh->uvCount];
 
 	//msg += sizeof(CreateMesh);
 	mVertex = (Vertex*)(msg);
@@ -313,14 +315,14 @@ void LevelEditor::createTestMesh(char* msg)
 	offsetIndices = (Index*)(msg);
 	msg += sizeof(Index)*mMesh->indexCount;
 
-	//skip uvs for now
-	u = (float*)msg;
+	
+	mU = (float*)(msg);
 	msg += sizeof(float) * mMesh->uvCount;
 
-	v = (float*)msg;
+	mV = (float*)(msg);
 	msg += sizeof(float) * mMesh->uvCount;
 
-	uvIndex = (Index*)msg;
+	uvIndex = (Index*)(msg);
 	msg += sizeof(Index)*mMesh->uvIndexCount;
 
 	materialName = msg;
@@ -337,11 +339,9 @@ void LevelEditor::createTestMesh(char* msg)
 		vData[i].nx = mNormal[mNormalIndex[offsetIndices[i].nr].nr].x;
 		vData[i].ny	= mNormal[mNormalIndex[offsetIndices[i].nr].nr].y;
 		vData[i].nz	= mNormal[mNormalIndex[offsetIndices[i].nr].nr].z;
-
-		vData[i].r = 150.f;
-		vData[i].g = 150.f;
-		vData[i].b = 150.f;
-
+		vData[i].u = mU[uvIndex[offsetIndices[i].nr].nr];
+		vData[i].v = mV[uvIndex[offsetIndices[i].nr].nr];
+		
 		indexList[i] = i;
 	}
 	/*for (size_t i = 0; i < mMesh->vertexCount; i++)
@@ -411,7 +411,7 @@ void LevelEditor::createTestMesh(char* msg)
 	{
 		VertexFormat::Element(VertexFormat::POSITION, 3),
 		VertexFormat::Element(VertexFormat::NORMAL, 3),
-		VertexFormat::Element(VertexFormat::COLOR, 3)
+		VertexFormat::Element(VertexFormat::TEXCOORD0, 2)
 	};
 
 	Mesh* mesh = Mesh::createMesh(VertexFormat(elements, 3), mMesh->indexCount, true);
@@ -641,9 +641,9 @@ void LevelEditor::modifyVertex(char * msg)
 			unsigned int * balle = (unsigned int *)msg;
 			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
 
-			vData.r = 150;
-			vData.g = 150;
-			vData.b = 150;
+			//vData.r = 150;
+			//vData.g = 150;
+			//vData.b = 150;
 
 			vData.x = translation->x;
 			vData.y = translation->y;
