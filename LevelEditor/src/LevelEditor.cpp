@@ -553,26 +553,17 @@ void LevelEditor::createMaterial(char * msg)
 		msg += sizeof(specular);
 	}
 
-	Node * node = _scene->findNode(name);
-    if (!node) 
-		node = Node::create(name);
 
-	Vector4 derp = (Vector4)(float*)&diff;
-
-	Material * material;
+	Material * material = nullptr;
 	if (hMaterial.texturePathLength <= 0) //no texture
 	{
 		material = Material::create("res/shaders/colored.vert", "res/shaders/colored.frag", "POINT_LIGHT_COUNT 1");
-		material->getParameter("u_diffuseColor")->setValue((Vector4)(float*)&diff);
+		
 	}
 	else //texture DO DIS SOEMTEIM PLS
 	{
 		material = Material::create("res/shaders/textured.vert", "res/shaders/textured.frag", "POINT_LIGHT_COUNT 1");
-		//need some way of keeping track of the texture.
-		//Texture * texture = Texture::create(texPath, true);
-		material->getParameter("u_diffuseTexture")->setValue(texPath, true);
 	}
-		material->getParameter("u_ambientColor")->setValue((float*)&amb);
 
 	RenderState::StateBlock* block = RenderState::StateBlock::create();
 	block->setCullFace(true);
@@ -588,8 +579,18 @@ void LevelEditor::createMaterial(char * msg)
 	material->getParameter("u_pointLightRangeInverse[0]")->bindValue(lightNode->getLight(), &Light::getRangeInverse);
 	material->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
 
-	
-	
+	if (hMaterial.texturePathLength <= 0) //no texture
+	{
+		//material->getParameter("u_diffuseColor")->setValue(Vector4(0.9f, 0.9f, 0.9f, 1.0f));
+		material->getParameter("u_diffuseColor")->setValue(Vector4((float*)&diff));
+	}
+	else {
+		//need some way of keeping track of the texture.
+		//Texture * texture = Texture::create(texPath, true);
+		material->getParameter("u_diffuseTexture")->setValue(texPath, true);
+	}
+
+	material->getParameter("u_ambientColor")->setValue(Vector3((float*)&amb));
 
 	materialMap[name] = material;
 
