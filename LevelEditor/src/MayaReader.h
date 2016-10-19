@@ -40,6 +40,7 @@ public:
         TEXTURE_CHANGE,
 		MATERAL_CHANGE,
         CAMERA_CHANGE,
+		NAME_CHANGE,
 		DELETED,
 
 		NUMBER_OF_SETTINGS //if you wanna looop them all
