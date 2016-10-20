@@ -48,14 +48,21 @@ void LevelEditor::initialize()
 #pragma region TESTS
 	
 
-	//Camera * Camera = Camera::createPerspective(45.0,
-	//	getAspectRatio(), 1.0f, 100.0f);
+	Camera * Camera = Camera::createPerspective(45.0,
+		getAspectRatio(), 1.0f, 100.0f);
 
-	//Node * cameraNode = _scene->addNode("persp");
-	//cameraNode->setCamera(Camera);
-	//_scene->setActiveCamera(Camera);
+	Node * cameraNode = _scene->addNode("persp");
+	cameraNode->setCamera(Camera);
+	_scene->setActiveCamera(Camera);
 
-	//SAFE_RELEASE(Camera);
+	SAFE_RELEASE(Camera);
+
+	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 1.0f, 100.0f);
+
+	Node * orthoNode = _scene->addNode("ortho");
+	cameraNode->setCamera(orthoCam);
+
+	//SAFE_RELEASE(orthoCam);
 
 	//cameraNode->translate(0, 1, 5);
 	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
@@ -131,6 +138,10 @@ void LevelEditor::update(float elapsedTime)
 			break;
 		}
 		case MayaReader::CAMERA_CHANGE:
+		{
+			changeCamera(msg);
+			break;
+		}
         case MayaReader::TEXTURE_CHANGE:
 		case MayaReader::MATERAL_CHANGE:
 		case MayaReader::NAME_CHANGE:
@@ -599,14 +610,23 @@ void LevelEditor::modifyVertex(char * msg)
 			vData.ny = 1;
 			vData.nz = 0;
 
+			
+
+			//gameplay::VertexFormat hejsna = static_cast<Model*>(node->getDrawable())->getMesh()->getVertexFormat();
+			//vertexData bajs = hejsna;
+			GL_ASSERT( glBindBuffer(GL_ARRAY_BUFFER, static_cast<Model*>(node->getDrawable())->getMesh()->getVertexBuffer()) );
+			
+
 			for (int i = 0; i < vertexInfo->indexLength; ++i)
 			{
 				if (*(unsigned int*)msg == indexList[i].nr)
 				{
-					static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
+					GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, i * (9*sizeof(float)), (3*sizeof(float)), (void*)&vData));
+					//static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
 				}
 			}
 			msg += sizeof(unsigned int) + sizeof(Vertex);
+			
 		}
 	}
 }
@@ -643,6 +663,48 @@ void LevelEditor::nameChange(char * msg)
 
 		node->setId(newName);
 	}
+}
+
+void LevelEditor::changeCamera(char * msg)
+{
+	bool * isOrtho = (bool*)msg;
+	char * pek = msg + sizeof(bool);
+
+	Camera * camera;
+	if (*isOrtho)
+	{
+		Node *node = _scene->findNode("ortho");
+		camera = node->getCamera();
+
+ 		node->setTranslation(*(Vector3*)pek);
+		pek += sizeof(float) * 3;
+		camera->setZoomX(*(float*)pek);
+		camera->setZoomY(*(float*)pek);
+
+		//_scene->setActiveCamera(camera);
+
+		//SAFE_RELEASE(camera);
+	}
+	else
+	{
+		Node *node = _scene->findNode("persp");
+		camera = node->getCamera();
+
+
+		Quaternion * hejsan = (Quaternion*)pek;
+
+		node->setRotation(*(Quaternion*)pek);
+		pek += sizeof(float) * 4;
+		node->setTranslation(*(Vector3*)pek);
+
+		//_scene->setActiveCamera(camera);
+
+		//SAFE_RELEASE(camera);
+	}
+	if (camera != _scene->getActiveCamera())
+		_scene->setActiveCamera(camera);
+
+	//SAFE_RELEASE(camera);
 }
 
 void LevelEditor::modifyTransform(char * msg)

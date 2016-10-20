@@ -57,6 +57,7 @@ protected:
 	void modifyVertex(char * msg);
 	void deleteElement(char * msg);
 	void nameChange(char * msg);
+	void changeCamera(char * msg);
 
 	/**
 	* @see Game::initialize
