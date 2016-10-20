@@ -60,7 +60,7 @@ void LevelEditor::initialize()
 	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 1.0f, 100.0f);
 
 	Node * orthoNode = _scene->addNode("ortho");
-	cameraNode->setCamera(orthoCam);
+	orthoNode->setCamera(orthoCam);
 
 	//SAFE_RELEASE(orthoCam);
 
@@ -676,8 +676,11 @@ void LevelEditor::changeCamera(char * msg)
 		Node *node = _scene->findNode("ortho");
 		camera = node->getCamera();
 
+		node->setRotation(*(Quaternion*)pek);
+		pek += sizeof(float) * 4;
  		node->setTranslation(*(Vector3*)pek);
 		pek += sizeof(float) * 3;
+
 		camera->setZoomX(*(float*)pek);
 		camera->setZoomY(*(float*)pek);
 
