@@ -135,6 +135,11 @@ void LevelEditor::update(float elapsedTime)
 			nameChange(msg);
 			break;
 		}
+		case MayaReader::MATERIAL_SET:
+		{
+			setMaterial(msg);
+			break;
+		}
         case MayaReader::DELETED:
 		{
 			deleteElement(msg);
@@ -284,7 +289,7 @@ void LevelEditor::createTestMesh(char* msg)
 	//msg += (*(unsigned int*)msg + sizeof(unsigned int));
 	//msg += (*(unsigned int*)msg + sizeof(CreateMesh));
 
-	char * materialName;
+	//char * materialName;
 	CreateMesh* mMesh;
 	Vertex *mVertex;
 	Index *mIndex, *mNormalIndex, *offsetIndices, *uvIndex;
@@ -331,8 +336,8 @@ void LevelEditor::createTestMesh(char* msg)
 	uvIndex = (Index*)(msg);
 	msg += sizeof(Index)*mMesh->uvIndexCount;
 
-	materialName = msg;
-	materialName[mMesh->materialNameLength] = '\0';
+	//materialName = msg;
+	//materialName[mMesh->materialNameLength] = '\0';
 
 	indexList = new unsigned int[mMesh->indexCount];
 
@@ -448,13 +453,6 @@ void LevelEditor::createTestMesh(char* msg)
 	);
 
 	Model * model = Model::create(mesh);
-
-	
-	Material * material = materialMap[materialName];
-
-	if (material)
-		model->setMaterial(material);
-
 	node->setDrawable(model);
 
 	printf(("Mesh Translate: %f, %f, %f \n"), node->getTranslation().x, node->getTranslation().y, node->getTranslation().z);
@@ -463,6 +461,30 @@ void LevelEditor::createTestMesh(char* msg)
 
     delete indexList;
 #pragma endregion
+}
+
+void LevelEditor::setMaterial(char * msg)
+{
+	setMat hSetMat = *(setMat*)msg;
+	msg += sizeof(setMat);
+	msg[hSetMat.meshNameLength - 1] = '\0';
+
+	printf("\n%s\n", msg);
+	Node * node = _scene->findNode(msg);
+	msg += hSetMat.meshNameLength;
+	printf("\n%s\n", msg);
+	msg[hSetMat.materialNameLength - 1] = '\0';
+	if (node)
+	{
+		//Material * newMaterial = Material(materialMap[msg]);
+
+		if (static_cast<Model*>(node->getDrawable())->hasMaterial(0))
+			static_cast<Model*>(node->getDrawable())->getMaterial()->release();
+
+		static_cast<Model*>(node->getDrawable())->setMaterial(materialMap[msg]);
+		materialMap[msg]->addRef();
+	}
+	//node->release();
 }
 
 void LevelEditor::createCamera(char * msg)
@@ -587,7 +609,6 @@ void LevelEditor::createMaterial(char * msg)
 
 	if (hMaterial.texturePathLength <= 0) //no texture
 	{
-		//material->getParameter("u_diffuseColor")->setValue(Vector4(0.9f, 0.9f, 0.9f, 1.0f));
 		material->getParameter("u_diffuseColor")->setValue(Vector4((float*)&diff));
 	}
 	else {
@@ -597,12 +618,7 @@ void LevelEditor::createMaterial(char * msg)
 	}
 
 	material->getParameter("u_ambientColor")->setValue(Vector3((float*)&amb));
-
 	materialMap[name] = material;
-
-	//Material * derp = materialMap[name];
-
-	//static_cast<Model*>(node->getDrawable())->setMaterial(material);
 
 }
 
