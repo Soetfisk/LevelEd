@@ -115,6 +115,7 @@ void LevelEditor::update(float elapsedTime)
 		case MayaReader::MATERIAL_NEW:
 		{
             createMaterial(msg);
+			//setMaterial(msg);
 			break;
 		}
 		case MayaReader::TRANSFORM:
@@ -130,6 +131,10 @@ void LevelEditor::update(float elapsedTime)
 		case MayaReader::CAMERA_CHANGE:
         case MayaReader::TEXTURE_CHANGE:
 		case MayaReader::MATERAL_CHANGE:
+		{
+			createMaterial(msg);
+			break;
+		}
 		case MayaReader::NAME_CHANGE:
 		{
 			nameChange(msg);
@@ -137,7 +142,7 @@ void LevelEditor::update(float elapsedTime)
 		}
 		case MayaReader::MATERIAL_SET:
 		{
-			setMaterial(msg);
+			createMaterial(msg);
 			break;
 		}
         case MayaReader::DELETED:
@@ -463,29 +468,22 @@ void LevelEditor::createTestMesh(char* msg)
 #pragma endregion
 }
 
-void LevelEditor::setMaterial(char * msg)
-{
-	setMat hSetMat = *(setMat*)msg;
-	msg += sizeof(setMat);
-	msg[hSetMat.meshNameLength - 1] = '\0';
-
-	printf("\n%s\n", msg);
-	Node * node = _scene->findNode(msg);
-	msg += hSetMat.meshNameLength;
-	printf("\n%s\n", msg);
-	msg[hSetMat.materialNameLength - 1] = '\0';
-	if (node)
-	{
-		//Material * newMaterial = Material(materialMap[msg]);
-
-		if (static_cast<Model*>(node->getDrawable())->hasMaterial(0))
-			static_cast<Model*>(node->getDrawable())->getMaterial()->release();
-
-		static_cast<Model*>(node->getDrawable())->setMaterial(materialMap[msg]);
-		materialMap[msg]->addRef();
-	}
-	//node->release();
-}
+//void LevelEditor::setMaterial(char * msg)
+//{
+//	setMat hSetMat = *(setMat*)msg;
+//	msg += sizeof(setMat);
+//	msg[hSetMat.meshNameLength - 1] = '\0';
+//
+//	printf("\n%s\n", msg);
+//	Node * node = _scene->findNode(msg);
+//	msg += hSetMat.meshNameLength;
+//	printf("\n%s\n", msg);
+//	msg[hSetMat.materialNameLength - 1] = '\0';
+//	if (node)
+//	{
+//		static_cast<Model*>(node->getDrawable())->setMaterial(materialMap[msg]);
+//	}
+//}
 
 void LevelEditor::createCamera(char * msg)
 {
@@ -618,7 +616,23 @@ void LevelEditor::createMaterial(char * msg)
 	}
 
 	material->getParameter("u_ambientColor")->setValue(Vector3((float*)&amb));
-	materialMap[name] = material;
+	//materialMap[name] = material;
+
+
+	setMat hSetMat = *(setMat*)msg;
+	msg += sizeof(setMat);
+	msg[hSetMat.meshNameLength - 1] = '\0';
+
+	printf("\n%s\n", msg);
+	Node * node = _scene->findNode(msg);
+	msg += hSetMat.meshNameLength;
+	printf("\n%s\n", msg);
+	msg[hSetMat.materialNameLength - 1] = '\0';
+	if (node)
+	{
+		static_cast<Model*>(node->getDrawable())->setMaterial(material);
+	}
+
 
 }
 
