@@ -48,14 +48,14 @@ void LevelEditor::initialize()
 #pragma region TESTS
 	
 
-	Camera * Camera = Camera::createPerspective(45.0,
+	perspCam = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
 	Node * cameraNode = _scene->addNode("persp");
-	cameraNode->setCamera(Camera);
-	_scene->setActiveCamera(Camera);
+	cameraNode->setCamera(perspCam);
+	_scene->setActiveCamera(perspCam);
 
-	SAFE_RELEASE(Camera);
+	//SAFE_RELEASE(Camera);
 
 	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 1.0f, 100.0f);
 
@@ -475,29 +475,29 @@ void LevelEditor::createCamera(char * msg)
 	//node = _scene->findNode(msg + sizeof(unsigned int));
 	node = _scene->findNode("persp"); //just checking the first place in the char pointer
 
-	Camera * camera;
+	//Camera * camera;
 
 	if (!node)
 	{
 		node = _scene->addNode("persp");
-		camera = Camera::createPerspective(45.0,	
+		perspCam = Camera::createPerspective(45.0,
 			getAspectRatio(), 1.0f, 100.0f);
-		node->setCamera(camera);
+		node->setCamera(perspCam);
 	}
 	else
 	{
-		camera = node->getCamera();
+		//perspCam = node->getCamera();
 	}
 	msg += *(unsigned int*)msg + sizeof(unsigned int);
 
-	camera->setProjectionMatrix(*(Matrix*)msg);
+	perspCam->setProjectionMatrix(*(Matrix*)msg);
 	msg += sizeof(Matrix);
 
 	node->set({ 1.0, 1.0, 1.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
-	_scene->setActiveCamera(camera);
-	node->setCamera(camera); //added for safe measures. Doesnt help or so anything in particular for the algorithm
+	_scene->setActiveCamera(perspCam);
+	node->setCamera(perspCam); //added for safe measures. Doesnt help or so anything in particular for the algorithm
 
-	SAFE_RELEASE(camera);
+	//SAFE_RELEASE(camera);
 
 
 }
@@ -706,7 +706,13 @@ void LevelEditor::changeCamera(char * msg)
 		//SAFE_RELEASE(camera);
 	}
 	if (camera != _scene->getActiveCamera())
-		_scene->setActiveCamera(camera);
+	{
+		if (_scene->getActiveCamera()->getCameraType() == 2)
+			_scene->setActiveCamera(perspCam);
+		else
+			_scene->setActiveCamera(camera);
+
+	}
 
 	//SAFE_RELEASE(camera);
 }
