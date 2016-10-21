@@ -57,7 +57,7 @@ void LevelEditor::initialize()
 
 	//SAFE_RELEASE(Camera);
 
-	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 1.0f, 100.0f);
+	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 0.1f, 10000.0f);
 
 	Node * orthoNode = _scene->addNode("ortho");
 	orthoNode->setCamera(orthoCam);
@@ -67,7 +67,7 @@ void LevelEditor::initialize()
 	//cameraNode->translate(0, 1, 5);
 	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
-
+	//setVsync(false);
 	
 	// Create a white light.
 	//Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
@@ -470,12 +470,12 @@ void LevelEditor::createTestMesh(char* msg)
 void LevelEditor::createCamera(char * msg)
 {
 	char * name = (msg + sizeof(unsigned int));
-	name[*(unsigned int*)msg + 1] = '\0';
+	name[*(unsigned int*)msg] = '\0';
 	Node * node;
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode("persp"); //just checking the first place in the char pointer
+	node = _scene->findNode(name); //just checking the first place in the char pointer
 
-	//Camera * camera;
+	Camera * camera;
 
 	if (!node)
 	{
@@ -486,7 +486,7 @@ void LevelEditor::createCamera(char * msg)
 	}
 	else
 	{
-		//perspCam = node->getCamera();
+	//camera = node->getCamera();
 	}
 	msg += *(unsigned int*)msg + sizeof(unsigned int);
 
