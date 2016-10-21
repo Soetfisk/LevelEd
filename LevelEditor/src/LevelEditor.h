@@ -15,6 +15,7 @@ class LevelEditor : public Game
 private:
 	MayaReader * mayaReader;
 	
+	Camera * perspCam;
 	/**
 	* Draws the scene each frame.
 	*/

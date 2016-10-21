@@ -62,7 +62,7 @@ void LevelEditor::initialize()
 	Node * orthoNode = _scene->addNode("ortho");
 	orthoNode->setCamera(orthoCam);
 
-	//SAFE_RELEASE(orthoCam);
+	SAFE_RELEASE(orthoCam);
 
 	//cameraNode->translate(0, 1, 5);
 	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
@@ -495,6 +495,7 @@ void LevelEditor::createCamera(char * msg)
 
 	node->set({ 1.0, 1.0, 1.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
 	_scene->setActiveCamera(camera);
+	node->setCamera(camera); //added for safe measures. Doesnt help or so anything in particular for the algorithm
 
 	SAFE_RELEASE(camera);
 
@@ -682,9 +683,9 @@ void LevelEditor::changeCamera(char * msg)
 		pek += sizeof(float) * 3;
 
 		camera->setZoomX(*(float*)pek);
-		camera->setZoomY(*(float*)pek);
+		camera->setZoomY((*(float*)pek)/2);
 
-		//_scene->setActiveCamera(camera);
+		//Height = width/2;
 
 		//SAFE_RELEASE(camera);
 	}
