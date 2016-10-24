@@ -591,10 +591,15 @@ void LevelEditor::modifyVertex(char * msg)
 
 		msg += sizeof(Index)*vertexInfo->indexLength;
 
+		Index * offsetList = (Index*)msg;
+
+		msg += sizeof(Index)*vertexInfo->indexLength;
+
 		for (int j = 0; j < vertexInfo->nrOfVertices; ++j)
 		{
 			unsigned int * balle = (unsigned int *)msg;
-			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
+			unsigned int * nrNorms = (unsigned int *)(msg + sizeof(unsigned int));
+			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int) + sizeof(unsigned int));
 
 			vData.r = 150;
 			vData.g = 150;
@@ -611,7 +616,7 @@ void LevelEditor::modifyVertex(char * msg)
 			vData.ny = 1;
 			vData.nz = 0;
 
-			
+			char * norm = msg + sizeof(unsigned int) + sizeof(unsigned int) + sizeof(Vertex);
 
 			//gameplay::VertexFormat hejsna = static_cast<Model*>(node->getDrawable())->getMesh()->getVertexFormat();
 			//vertexData bajs = hejsna;
@@ -625,8 +630,25 @@ void LevelEditor::modifyVertex(char * msg)
 					GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, i * (9*sizeof(float)), (3*sizeof(float)), (void*)&vData));
 					//static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
 				}
+				for (int j = 0; j < *nrNorms; ++j)
+				{
+					//vertexData normal;
+					Vertex * normIn = (Vertex*)(norm + sizeof(unsigned int));
+					unsigned int * nId = (unsigned int*)norm;
+					//normal.nx = normIn->x;
+					//normal.ny = normIn->y;
+					//normal.nz = normIn->z;
+
+					if (*(unsigned int*)norm == offsetList[i].nr)
+					{
+						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (9 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&normIn));
+					}
+					norm += sizeof(unsigned int) + sizeof(Vertex);
+				}
+				norm = msg + sizeof(unsigned int) + sizeof(unsigned int) +sizeof(Vertex);
 			}
-			msg += sizeof(unsigned int) + sizeof(Vertex);
+			msg += (sizeof(unsigned int) + sizeof(unsigned int) + sizeof(Vertex))
+				+ ((sizeof(unsigned int) + sizeof(Vertex)) * *nrNorms);
 			
 		}
 	}
