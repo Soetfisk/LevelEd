@@ -595,6 +595,10 @@ void LevelEditor::modifyVertex(char * msg)
 
 		msg += sizeof(Index)*vertexInfo->indexLength;
 
+		Index * normalIdList = (Index*)msg;
+
+		msg += sizeof(Index)*vertexInfo->normalIdLength;
+
 		for (int j = 0; j < vertexInfo->nrOfVertices; ++j)
 		{
 			unsigned int * balle = (unsigned int *)msg;
@@ -633,15 +637,23 @@ void LevelEditor::modifyVertex(char * msg)
 				for (int j = 0; j < *nrNorms; ++j)
 				{
 					//vertexData normal;
-					Vertex * normIn = (Vertex*)(norm + sizeof(unsigned int));
-					unsigned int * nId = (unsigned int*)norm;
+					Vertex  * normIn = (Vertex*)(norm + sizeof(unsigned int));
+					/*Vertex normIn;
+					normIn.x = *(float*)(norm + sizeof(unsigned int));
+					normIn.y = *(float*)(norm + sizeof(unsigned int) + sizeof(float));
+					normIn.z = *(float*)(norm + sizeof(unsigned int) + sizeof(float) + sizeof(float));*/
+					//unsigned int * nId = (unsigned int*)norm;
+					//unsigned int oId = offsetList[normalIdList[i].nr].nr;
+					/*unsigned int oId = offsetList[i].nr;
+					unsigned int nId2 = normalIdList[offsetList[i].nr].nr;
+					unsigned int asds = offsetList[*(unsigned int*)norm].nr;*/
 					//normal.nx = normIn->x;
 					//normal.ny = normIn->y;
 					//normal.nz = normIn->z;
-
-					if (*(unsigned int*)norm == offsetList[i].nr)
+					
+					if (*(unsigned int*)norm == normalIdList[offsetList[i].nr].nr)
 					{
-						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (9 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&normIn));
+						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (9 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&(*normIn)));
 					}
 					norm += sizeof(unsigned int) + sizeof(Vertex);
 				}
