@@ -38,6 +38,7 @@ private:
 	//textureMap tMap;
 #pragma endregion
 
+	Camera * perspCam;
 	/**
 	* Draws the scene each frame.
 	*/
@@ -81,6 +82,7 @@ protected:
 	void deleteElement(char * msg);
 	void nameChange(char * msg);
 	void setMaterial(char * msg);
+	void changeCamera(char * msg);
 	/**
 	* @see Game::initialize
 	*/
