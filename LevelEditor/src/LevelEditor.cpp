@@ -48,16 +48,16 @@ void LevelEditor::initialize()
 #pragma region TESTS
 	
 
-	Camera * Camera = Camera::createPerspective(45.0,
+	perspCam = Camera::createPerspective(45.0,
 		getAspectRatio(), 1.0f, 100.0f);
 
 	Node * cameraNode = _scene->addNode("persp");
-	cameraNode->setCamera(Camera);
-	_scene->setActiveCamera(Camera);
+	cameraNode->setCamera(perspCam);
+	_scene->setActiveCamera(perspCam);
 
-	SAFE_RELEASE(Camera);
+	//SAFE_RELEASE(Camera);
 
-	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 1.0f, 100.0f);
+	gameplay::Camera * orthoCam = Camera::createOrthographic(1, 1, getAspectRatio(), 0.1f, 10000.0f);
 
 	Node * orthoNode = _scene->addNode("ortho");
 	orthoNode->setCamera(orthoCam);
@@ -67,7 +67,7 @@ void LevelEditor::initialize()
 	//cameraNode->translate(0, 1, 5);
 	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
-
+	//setVsync(false);
 	
 	// Create a white light.
 	//Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
@@ -470,34 +470,34 @@ void LevelEditor::createTestMesh(char* msg)
 void LevelEditor::createCamera(char * msg)
 {
 	char * name = (msg + sizeof(unsigned int));
-	name[*(unsigned int*)msg + 1] = '\0';
+	name[*(unsigned int*)msg] = '\0';
 	Node * node;
 	//node = _scene->findNode(msg + sizeof(unsigned int));
-	node = _scene->findNode("persp"); //just checking the first place in the char pointer
+	node = _scene->findNode(name); //just checking the first place in the char pointer
 
 	Camera * camera;
 
 	if (!node)
 	{
 		node = _scene->addNode("persp");
-		camera = Camera::createPerspective(45.0,	
+		perspCam = Camera::createPerspective(45.0,
 			getAspectRatio(), 1.0f, 100.0f);
-		node->setCamera(camera);
+		node->setCamera(perspCam);
 	}
 	else
 	{
-		camera = node->getCamera();
+	//camera = node->getCamera();
 	}
 	msg += *(unsigned int*)msg + sizeof(unsigned int);
 
-	camera->setProjectionMatrix(*(Matrix*)msg);
+	perspCam->setProjectionMatrix(*(Matrix*)msg);
 	msg += sizeof(Matrix);
 
 	node->set({ 1.0, 1.0, 1.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
-	_scene->setActiveCamera(camera);
-	node->setCamera(camera); //added for safe measures. Doesnt help or so anything in particular for the algorithm
+	_scene->setActiveCamera(perspCam);
+	node->setCamera(perspCam); //added for safe measures. Doesnt help or so anything in particular for the algorithm
 
-	SAFE_RELEASE(camera);
+	//SAFE_RELEASE(camera);
 
 
 }
@@ -591,10 +591,19 @@ void LevelEditor::modifyVertex(char * msg)
 
 		msg += sizeof(Index)*vertexInfo->indexLength;
 
+		Index * offsetList = (Index*)msg;
+
+		msg += sizeof(Index)*vertexInfo->indexLength;
+
+		Index * normalIdList = (Index*)msg;
+
+		msg += sizeof(Index)*vertexInfo->normalIdLength;
+
 		for (int j = 0; j < vertexInfo->nrOfVertices; ++j)
 		{
 			unsigned int * balle = (unsigned int *)msg;
-			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int));
+			unsigned int * nrNorms = (unsigned int *)(msg + sizeof(unsigned int));
+			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int) + sizeof(unsigned int));
 
 			vData.r = 150;
 			vData.g = 150;
@@ -611,7 +620,7 @@ void LevelEditor::modifyVertex(char * msg)
 			vData.ny = 1;
 			vData.nz = 0;
 
-			
+			char * norm = msg + sizeof(unsigned int) + sizeof(unsigned int) + sizeof(Vertex);
 
 			//gameplay::VertexFormat hejsna = static_cast<Model*>(node->getDrawable())->getMesh()->getVertexFormat();
 			//vertexData bajs = hejsna;
@@ -625,8 +634,33 @@ void LevelEditor::modifyVertex(char * msg)
 					GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, i * (9*sizeof(float)), (3*sizeof(float)), (void*)&vData));
 					//static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
 				}
+				for (int j = 0; j < *nrNorms; ++j)
+				{
+					//vertexData normal;
+					Vertex  * normIn = (Vertex*)(norm + sizeof(unsigned int));
+					/*Vertex normIn;
+					normIn.x = *(float*)(norm + sizeof(unsigned int));
+					normIn.y = *(float*)(norm + sizeof(unsigned int) + sizeof(float));
+					normIn.z = *(float*)(norm + sizeof(unsigned int) + sizeof(float) + sizeof(float));*/
+					//unsigned int * nId = (unsigned int*)norm;
+					//unsigned int oId = offsetList[normalIdList[i].nr].nr;
+					/*unsigned int oId = offsetList[i].nr;
+					unsigned int nId2 = normalIdList[offsetList[i].nr].nr;
+					unsigned int asds = offsetList[*(unsigned int*)norm].nr;*/
+					//normal.nx = normIn->x;
+					//normal.ny = normIn->y;
+					//normal.nz = normIn->z;
+					
+					if (*(unsigned int*)norm == normalIdList[offsetList[i].nr].nr)
+					{
+						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (9 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&(*normIn)));
+					}
+					norm += sizeof(unsigned int) + sizeof(Vertex);
+				}
+				norm = msg + sizeof(unsigned int) + sizeof(unsigned int) +sizeof(Vertex);
 			}
-			msg += sizeof(unsigned int) + sizeof(Vertex);
+			msg += (sizeof(unsigned int) + sizeof(unsigned int) + sizeof(Vertex))
+				+ ((sizeof(unsigned int) + sizeof(Vertex)) * *nrNorms);
 			
 		}
 	}
@@ -706,7 +740,13 @@ void LevelEditor::changeCamera(char * msg)
 		//SAFE_RELEASE(camera);
 	}
 	if (camera != _scene->getActiveCamera())
-		_scene->setActiveCamera(camera);
+	{
+		if (_scene->getActiveCamera()->getCameraType() == 2)
+			_scene->setActiveCamera(perspCam);
+		else
+			_scene->setActiveCamera(camera);
+
+	}
 
 	//SAFE_RELEASE(camera);
 }

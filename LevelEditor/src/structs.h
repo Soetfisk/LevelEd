@@ -36,6 +36,7 @@
 		unsigned int nameLength;
 		unsigned int nrOfVertices;
 		unsigned int indexLength;
+		unsigned int normalIdLength;
 	};
 	struct vertexWID
 	{
