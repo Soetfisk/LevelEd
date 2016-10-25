@@ -31,8 +31,8 @@ private:
 	//	}
 	//};
 
-	MayaReader * mayaReader;
-	std::unordered_map<std::string, Material*> materialMap;
+	//MayaReader * mayaReader;
+	//std::unordered_map<std::string, Material*> materialMap;
 	//typedef std::unordered_map<Material*, Texture*, mat_cmp> textureMap;
 	//materialMap mMap;
 	//textureMap tMap;

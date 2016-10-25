@@ -151,11 +151,6 @@ void LevelEditor::update(float elapsedTime)
 			nameChange(msg);
 			break;
 		}
-		case MayaReader::MATERIAL_SET:
-		{
-			createMaterial(msg);
-			break;
-		}
         case MayaReader::DELETED:
 		{
 			deleteElement(msg);

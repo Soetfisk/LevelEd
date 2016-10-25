@@ -41,7 +41,6 @@ public:
 		MATERAL_CHANGE,
         CAMERA_CHANGE,
 		NAME_CHANGE,
-		MATERIAL_SET,
 		DELETED,
 
 		NUMBER_OF_SETTINGS //if you wanna looop them all
