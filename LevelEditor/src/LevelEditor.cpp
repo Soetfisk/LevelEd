@@ -42,6 +42,16 @@ void LevelEditor::initialize()
 
 	_scene->addNode(lightnode);
 
+
+	//RenderState::StateBlock* block = RenderState::StateBlock::create();
+	//block->setCullFace(true);
+	////block->setDepthTest(false);
+	//block->setStencilTest(true);
+	////block->setDepthWrite(true);
+	
+	//glDepthFunc(GL_LESS);
+	//glEnable(GL_DEPTH_TEST);
+
 	lightnode->release();
 	light->release();
 
@@ -172,7 +182,7 @@ void LevelEditor::render(float elapsedTime)
 	// Clear the color and depth buffers
 	clear(CLEAR_COLOR_DEPTH, Vector4(1.0, 1.0 ,1.0 ,1.0), 1.0f, 0);
 
-
+	
 
 
 	// Visit all the nodes in the scene for drawing
@@ -514,8 +524,18 @@ void LevelEditor::createCamera(char * msg)
 	}
 	msg += *(unsigned int*)msg + sizeof(unsigned int);
 
-	perspCam->setProjectionMatrix(*(Matrix*)msg);
+	float * projValue = (float*)msg;
+	//float kuk = hejsan[11];
+	projValue[10] *= -1;
+	projValue[14] *= -1;
+
+	perspCam->setProjectionMatrix(*(Matrix*)projValue);
 	msg += sizeof(Matrix);
+
+	/*float tempNear = perspCam->getNearPlane();
+	float tempFar = perspCam->getFarPlane();*/
+	//perspCam->setNearPlane(0.100);
+	//perspCam->setFarPlane(10000);
 
 	node->set({ 1.0, 1.0, 1.0 }, Quaternion(((float*)msg)), (&((float*)msg)[4])); //set translation values
 	_scene->setActiveCamera(perspCam);
@@ -600,7 +620,19 @@ void LevelEditor::createMaterial(char * msg)
 
 	RenderState::StateBlock* block = RenderState::StateBlock::create();
 	block->setCullFace(true);
+	
 	block->setDepthTest(true);
+	//block->setCullFace(true);
+	block->setDepthFunction(RenderState::DEPTH_LESS);
+	//block->setFrontFace(RenderState::FRONT_FACE_CW);
+	//block->setStencilTest(true);
+	//block->setStencilFunction(RenderState::STENCIL_GREATER, 0, 1);
+	//block->setBlend(true);
+	//block->setBlendSrc(RenderState::BLEND_SRC_ALPHA);
+	//block->setBlendDst(RenderState::BLEND_ONE_MINUS_SRC_ALPHA);
+	//block->setDepthTest(false);
+	//block->setStencilTest(true);
+	////block->setDepthWrite(true);
 	material->setStateBlock(block);
 
 	material->setParameterAutoBinding("u_worldViewMatrix", RenderState::AutoBinding::WORLD_VIEW_MATRIX);
@@ -824,6 +856,10 @@ void LevelEditor::changeCamera(char * msg)
 		pek += sizeof(float) * 4;
 		node->setTranslation(*(Vector3*)pek);
 
+		/*float tempNear = perspCam->getNearPlane();
+		float tempFar = perspCam->getFarPlane();
+		perspCam->setNearPlane(tempFar);
+		perspCam->setFarPlane(tempNear);*/
 		//_scene->setActiveCamera(camera);
 
 		//SAFE_RELEASE(camera);
