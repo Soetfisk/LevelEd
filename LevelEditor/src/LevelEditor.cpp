@@ -669,7 +669,7 @@ void LevelEditor::modifyVertex(char * msg)
 	node = _scene->findNode(name);
 	if (node)
 	{
-		vertexData vData;
+		//vertexData vData;
 		modVertInfo * vertexInfo = (modVertInfo*)msg;
 
 		msg += sizeof(modVertInfo);
@@ -689,7 +689,7 @@ void LevelEditor::modifyVertex(char * msg)
 
 		for (int j = 0; j < vertexInfo->nrOfVertices; ++j)
 		{
-			unsigned int * balle = (unsigned int *)msg;
+			//unsigned int * balle = (unsigned int *)msg;
 			unsigned int * nrNorms = (unsigned int *)(msg + sizeof(unsigned int));
 			Vertex * translation = (Vertex*)(msg + sizeof(unsigned int) + sizeof(unsigned int));
 
@@ -697,16 +697,17 @@ void LevelEditor::modifyVertex(char * msg)
 			//vData.g = 150;
 			//vData.b = 150;
 
-			vData.x = translation->x;
+			/*vData.x = translation->x;
 			vData.y = translation->y;
-			vData.z = translation->z;
+			vData.z = translation->z;*/
+
 
 			//VertexBufferHandle kuk = static_cast<Model*>(node->getDrawable())->getMesh()->getVertexBuffer();
 			//vertexData * knulla = (vertexData*)bajs;
 
-			vData.nx = 0;
+			/*vData.nx = 0;
 			vData.ny = 1;
-			vData.nz = 0;
+			vData.nz = 0;*/
 
 			char * norm = msg + sizeof(unsigned int) + sizeof(unsigned int) + sizeof(Vertex);
 
@@ -719,7 +720,7 @@ void LevelEditor::modifyVertex(char * msg)
 			{
 				if (*(unsigned int*)msg == indexList[i].nr)
 				{
-					GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, i * (9*sizeof(float)), (3*sizeof(float)), (void*)&vData));
+					GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, i * (8*sizeof(float)), (3*sizeof(float)), (void*)&(*translation)));
 					//static_cast<Model*>(node->getDrawable())->getMesh()->setVertexData(&vData, i, 1);
 				}
 				for (int j = 0; j < *nrNorms; ++j)
@@ -741,7 +742,7 @@ void LevelEditor::modifyVertex(char * msg)
 					
 					if (*(unsigned int*)norm == normalIdList[offsetList[i].nr].nr)
 					{
-						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (9 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&(*normIn)));
+						GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER, (i * (8 * sizeof(float))) + (3 * sizeof(float)), (3 * sizeof(float)), (void*)&(*normIn)));
 					}
 					norm += sizeof(unsigned int) + sizeof(Vertex);
 				}
