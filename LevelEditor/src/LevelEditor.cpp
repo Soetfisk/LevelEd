@@ -77,7 +77,7 @@ void LevelEditor::initialize()
 	//cameraNode->translate(0, 1, 5);
 	//cameraNode->rotateX(MATH_DEG_TO_RAD(-11.25f));
 
-	//setVsync(false);
+	setVsync(false);
 	
 	// Create a white light.
 	//Light* light = Light::createDirectional(0.75f, 0.75f, 0.75f);
