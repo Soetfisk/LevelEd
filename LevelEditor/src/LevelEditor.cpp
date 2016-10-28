@@ -22,11 +22,16 @@ LevelEditor::LevelEditor()
 LevelEditor::~LevelEditor()
 {
 	delete mayaReader;
+
+
+	_scene->removeAllNodes();
+
 }
+
 
 void LevelEditor::initialize()
 {
-
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	InitDosConsole();
 
 	mayaReader = new MayaReader();
@@ -35,10 +40,10 @@ void LevelEditor::initialize()
 	_scene->setAmbientColor(1.0, 1.0, 1.0);
 
 	Node * lightnode = Node::create("pointLightShape1");
-	Light * light = Light::createPoint(Vector3(0.5f, 0.5f, 0.5f), 25);
+	Light * light = Light::createPoint(Vector3(1.0f, 1.0f, 1.0f), 100);
 
 	lightnode->setLight(light);
-	lightnode->translate(Vector3(1.f, 1.f, 0.f));
+	lightnode->translate(Vector3(1.f, 15.f, 0.f));
 
 	_scene->addNode(lightnode);
 
@@ -326,10 +331,10 @@ void LevelEditor::createTestMesh(char* msg)
 	msg += sizeof(float) * 10;
 
 	printf("%d, %d, %d ", mMesh->indexCount, mMesh->normalCount, mMesh->vertexCount);
-	mVertex = new Vertex[mMesh->vertexCount];
-	mIndex = new Index[mMesh->indexCount];
-	mU = new float[mMesh->uvCount];
-	mV = new float[mMesh->uvCount];
+	//mVertex = new Vertex[mMesh->vertexCount];
+	//mIndex = new Index[mMesh->indexCount];
+	//mU = new float[mMesh->uvCount];
+	//mV = new float[mMesh->uvCount];
 
 	//msg += sizeof(CreateMesh);
 	mVertex = (Vertex*)(msg);
@@ -480,6 +485,8 @@ void LevelEditor::createTestMesh(char* msg)
 
 	_scene->addNode(node);
 
+	delete[] vData;
+
     delete indexList;
 #pragma endregion
 }
@@ -598,6 +605,10 @@ void LevelEditor::createMaterial(char * msg)
 	msg += sizeof(ambient);
 
 	diff = *(diffuse*)msg;
+
+	diff.r *= diff.coeff;
+	diff.g *= diff.coeff;
+	diff.b *= diff.coeff;
 	msg += sizeof(diffuse);
 
 	if (hMaterial.specular)

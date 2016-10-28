@@ -51,11 +51,12 @@ public:
 	MayaReader::MsgContain handleData(char *& msg); 	//this is a call to the circular "pull" function, to get data from maya. Returns what kind of msg it is, "msg" recieves the msg adress
 	void cleanUp();
 
-	DataType::Mesh * testMesh;
-	DataType::Topology * testTopology;
-	DataType::Vertex * testVertexData;
+	//DataType::Mesh * testMesh;
+	//DataType::Topology * testTopology;
+	//DataType::Vertex * testVertexData;
 
 private:
+	char * rumpa;
 	char * msg;
 	size_t length;
 	CircularBuffer * circularBuffer;
